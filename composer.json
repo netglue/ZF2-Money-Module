@@ -1,0 +1,38 @@
+{
+  "name" : "netglue/zf2-money-module",
+  "description" : "ZF2 Module that provides various currency conversion adapters and a kind of money model",
+  "type" : "module",
+  "license" : "MIT",
+  "keywords" : [
+    "zf2",
+    "zend",
+    "module",
+    "netglue",
+    "currency",
+    "conversion",
+    "money"
+  ],
+  "homepage" : "https://github.com/netglue/zf2-money-module",
+  "support" : {
+    "issues" : "https://github.com/netglue/zf2-money-module/issues"
+  },
+  "authors" : [
+    {
+      "name" : "George Steel",
+      "email" : "george@net-glue.co.uk",
+      "homepage" : "http://netglue.co/"
+    }
+  ],
+  "require" : {
+    "php" : ">=5.3.3",
+    "ext-bcmath" : "*",
+    "zendframework/zend-cache" : "2.2.*",
+    "zendframework/zend-stdlib" : "2.2.*",
+    "zendframework/zend-http" : "2.2.*"
+  },
+  "autoload" : {
+    "psr-0" : {
+      "NetglueMoney" : "src/"
+    }
+  }
+}

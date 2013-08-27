@@ -25,6 +25,13 @@ interface AdapterInterface {
 	public function getSupportedCurrencyCodes();
 	
 	/**
+	 * Whether the given code is supported
+	 * @param string $code
+	 * @return bool
+	 */
+	public function isSupportedCurrency($code);
+	
+	/**
 	 * Return the rate between the two currency codes
 	 * @param string $from
 	 * @param string $to
@@ -35,5 +42,10 @@ interface AdapterInterface {
 	 */
 	public function getRate($from, $to, $time = NULL);
 	
+	/**
+	 * Whether the adapter supports historical exchange rate lookups
+	 * @return bool
+	 */
+	public function supportsHistoricalRates();
 	
 }
