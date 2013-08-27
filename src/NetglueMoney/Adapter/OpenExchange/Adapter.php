@@ -32,10 +32,6 @@ class Adapter extends AbstractAdapter {
 	 */
 	protected $latestRates;
 	
-	public function __construct(Options $options) {
-		$this->setOptions($options);
-	}
-	
 	/**
 	 * Return supported currencies as an array
 	 * @return array
@@ -286,4 +282,12 @@ class Adapter extends AbstractAdapter {
 		}
 		return $code;
 	}
+	
+	public function setOptions($options) {
+		if(!$options instanceof Options) {
+			$options = new Options($options);
+		}
+		return parent::setOptions($options);
+	}
+	
 }

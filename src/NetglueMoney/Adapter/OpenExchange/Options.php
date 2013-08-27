@@ -2,10 +2,10 @@
 
 namespace NetglueMoney\Adapter\OpenExchange;
 
-use NetglueMoney\Adapter\AbstractOptions;
+use NetglueMoney\Adapter\AdapterOptions;
 use NetglueMoney\Adapter\Exception;
 
-class Options extends AbstractOptions {
+class Options extends AdapterOptions {
 	
 	const ACCOUNT_TYPE_FREE = 'free';
 	
@@ -141,6 +141,12 @@ class Options extends AbstractOptions {
 	 */
 	public function setAccountType($type) {
 		$type = trim(strtolower($type));
+		$types = array(
+			self::ACCOUNT_TYPE_FREE,
+			self::ACCOUNT_TYPE_DEVELOPER,
+			self::ACCOUNT_TYPE_ENTERPRISE,
+			self::ACCOUNT_TYPE_UNLIMITED,
+		);
 		if(!in_array($type, $types)) {
 			throw new Exception\InvalidArgumentException("Unknown account type {$type}");
 		}

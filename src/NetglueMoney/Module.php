@@ -72,7 +72,7 @@ class Module implements
 	 * @implements ConfigProviderInterface
 	 */
 	public function getConfig() {
-		return array();
+		return include __DIR__ . '/../../config/module.config.php';
 	}
 	
 	/**

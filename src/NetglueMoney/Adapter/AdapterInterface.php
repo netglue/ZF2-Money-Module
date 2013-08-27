@@ -9,7 +9,7 @@ interface AdapterInterface {
 	 * @param AdapterOptionsInterface $options
 	 * @return AdapterInterface self
 	 */
-	public function setOptions(AdapterOptionsInterface $options);
+	public function setOptions($options);
 	
 	/**
 	 * Return configured options object

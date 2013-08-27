@@ -17,14 +17,21 @@ abstract class AbstractAdapter implements AdapterInterface {
 	 * @var StorageInterface|NULL
 	 */
 	protected $cache;
-	
+		
 	/**
-	 * Set adapter options
-	 * @param AdapterOptionsInterface $options
-	 * @return AdapterInterface self
+	 * Set options.
+	 *
+	 * @param  array|Traversable|AdapterOptions $options
+	 * @return AbstractAdapter
+	 * @see    getOptions()
 	 */
-	public function setOptions(AdapterOptionsInterface $options) {
-		$this->options = $options;
+	public function setOptions($options) {
+		if ($this->options !== $options) {
+			if (!$options instanceof AdapterOptions) {
+				$options = new AdapterOptions($options);
+			}
+			$this->options = $options;
+		}
 		return $this;
 	}
 	
@@ -33,6 +40,9 @@ abstract class AbstractAdapter implements AdapterInterface {
 	 * @return AdapterOptionsInterface|NULL
 	 */
 	public function getOptions() {
+		if (!$this->options) {
+			$this->setOptions(new AdapterOptions());
+		}
 		return $this->options;
 	}
 	
