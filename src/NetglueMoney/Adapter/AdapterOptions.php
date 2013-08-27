@@ -4,7 +4,7 @@ namespace NetglueMoney\Adapter;
 
 use Zend\StdLib\AbstractOptions as StdOptions;
 
-abstract class AbstractOptions extends StdOptions implements AdapterOptionsInterface {
+class AdapterOptions extends StdOptions implements AdapterOptionsInterface {
 	
 	protected $scale = 10;
 	
