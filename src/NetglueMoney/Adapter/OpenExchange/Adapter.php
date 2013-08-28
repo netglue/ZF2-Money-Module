@@ -6,6 +6,8 @@ use NetglueMoney\Adapter\AbstractAdapter;
 
 use NetglueMoney\Adapter\Exception;
 
+use DateTime;
+
 use Zend\Http\Client;
 use Zend\Http\Request;
 use Zend\Http\Response;
