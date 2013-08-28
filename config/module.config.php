@@ -13,8 +13,15 @@ return array(
 		'cache' => array(
 			'adapter' => array(
 				'name' => 'filesystem',
-				'options' => array(),
+				'options' => array(
+					'ttl' => 7200,
+				),
 			),
+		),
+		'converter' => array(
+			'round' => true,
+			'precision' => 2,
+			'roundMode' => PHP_ROUND_HALF_UP,
 		),
 	),
 	
