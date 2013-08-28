@@ -73,13 +73,47 @@ class MoneyTest extends Framework\TestCase {
 	 * @covers Money::setDateTime
 	 * @covers Money::getDateTime
 	 */
-	public function testSetGetDateTime() {
+	public function testCurrentDateByDefault() {
 		$money = new Money;
-		$this->assertNull($money->getDateTime());
-		
+		$date = $money->getDateTime();
+		$this->assertInstanceOf('DateTime', $date);
+		$this->assertSame(date("Ynj"), $date->format("Ynj"));
+	}
+	
+	/**
+	 * @covers Money::setDateTime
+	 * @covers Money::getDateTime
+	 */
+	public function testSetGetDateTimeWithDateTime() {
+		$money = new Money;
 		$date = new DateTime;
 		$this->assertSame($money, $money->setDateTime($date));
 		$this->assertSame($date, $money->getDateTime());
+	}
+	
+	/**
+	 * @covers Money::setDateTime
+	 * @covers Money::getDateTime
+	 */
+	public function testSetGetDateTimeWithTimestamp() {
+		$money = new Money;
+		$time = time();
+		$this->assertSame($money, $money->setDateTime($time));
+		$date = $money->getDateTime();
+		$this->assertSame($time, $date->getTimestamp());
+	}
+	
+	/**
+	 * @covers Money::setDateTime
+	 * @covers Money::getDateTime
+	 */
+	public function testSetGetDateTimeWithString() {
+		$money = new Money;
+		$time = 'January 1st 2013 4:16pm';
+		$this->assertSame($money, $money->setDateTime($time));
+		$date = $money->getDateTime();
+		$time = mktime(16, 16, 0, 1, 1, 2013);
+		$this->assertSame($time, $date->getTimestamp());
 	}
 	
 	/**
@@ -88,8 +122,6 @@ class MoneyTest extends Framework\TestCase {
 	 */
 	public function testSetGetTimestamp() {
 		$money = new Money;
-		$this->assertNull($money->getTimestamp());
-		$this->assertNull($money->getDateTime());
 		
 		$time = time();
 		$this->assertSame($money, $money->setTimestamp($time));
@@ -108,15 +140,12 @@ class MoneyTest extends Framework\TestCase {
 	}
 	
 	/**
-	 * @covers Money::setTimestamp
+	 * @covers Money::setDateTime
 	 * @expectedException \NetglueMoney\Exception\InvalidArgumentException
 	 */
-	public function testSetTimestampThrowsExceptionForFalseReturnOfDateTime() {
-		// Having difficulty generating a timestamp that would cause DateTime to return false...
-		$this->markTestSkipped();
-		return;
+	public function testSetDateTimeThrowsExceptionForInvalidDateTime() {
 		$money = new Money;
-		$money->setTimestamp();
+		$money->setDateTime('foo');
 	}
 	
 }

@@ -105,7 +105,11 @@ class Money {
 			$dateTime = $date;
 		}
 		if(!$dateTime instanceof DateTime) {
-			$dateTime = new DateTime($dateTime);
+			try {
+				$dateTime = new DateTime($dateTime);
+			} catch(\Exception $e) {
+				throw new Exception\InvalidArgumentException("Invalid date/time value", NULL, $e);
+			}
 		}
 		$this->dateTime = $dateTime;
 		return $this;
