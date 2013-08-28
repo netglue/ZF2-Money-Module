@@ -8,6 +8,7 @@ namespace NetglueMoney\Service;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use NetglueMoney\Service\CurrencyConverter;
+use NetglueMoney\Service\CurrencyConverterOptions;
 use NetglueMoney\Adapter\AdapterPluginManager;
 use NetglueMoney\Adapter\AdapterInterface;
 
@@ -44,8 +45,10 @@ class CurrencyConverterFactory implements FactoryInterface {
 			$adapter->setCache($cache);
 		}
 		
-		
+		$options = isset($config['converter']) ? $config['converter'] : array();
+		$options = new CurrencyConverterOptions($options);
 		$converter = new CurrencyConverter($adapter);
+		$converter->setOptions($options);
 		return $converter;
 	}
 	
