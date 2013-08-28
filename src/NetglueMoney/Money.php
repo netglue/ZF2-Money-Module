@@ -32,10 +32,10 @@ class Money {
 	 * Constructor
 	 * @param string|int|float $amount
 	 * @param string $code ISO 4217 Currency Code
-	 * @param DateTime $date
+	 * @param DateTime|int|string $date DateTime, Unix timestamp, something that will create a successfull DateTime instance
 	 * @return void
 	 */
-	public function __construct($amount = NULL, $code = NULL, DateTime $date = NULL) {
+	public function __construct($amount = NULL, $code = NULL, $date = NULL) {
 		if(NULL !== $amount) {
 			$this->setAmount($amount);
 		}
@@ -95,19 +95,30 @@ class Money {
 	
 	/**
 	 * Set the date/time attribute
-	 * @param DateTime $dateTime
+	 * @param DateTime|int $dateTime DateTime or Unix timestamp
 	 * @return self
 	 */
-	public function setDateTime(DateTime $dateTime) {
+	public function setDateTime($dateTime) {
+		if(is_numeric($dateTime)) {
+			$date = new DateTime;
+			$date->setTimestamp($dateTime);
+			$dateTime = $date;
+		}
+		if(!$dateTime instanceof DateTime) {
+			$dateTime = new DateTime($dateTime);
+		}
 		$this->dateTime = $dateTime;
 		return $this;
 	}
 	
 	/**
 	 * Return date/time
-	 * @return DateTime|NULL
+	 * @return DateTime
 	 */
 	public function getDateTime() {
+		if(NULL === $this->dateTime) {
+			$this->setDateTime(time());
+		}
 		return $this->dateTime;
 	}
 	
