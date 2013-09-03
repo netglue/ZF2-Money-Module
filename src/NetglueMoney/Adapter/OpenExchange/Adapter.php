@@ -140,27 +140,6 @@ class Adapter extends AbstractAdapter {
 	}
 	
 	/**
-	 * Helper method to throw exceptions if either pair of currencies are not among those supported
-	 * @param string $from
-	 * @param string $to
-	 * @return void
-	 * @throws Exception\CurrencyNotSupportedException
-	 */
-	protected function checkCodePair(& $from, & $to) {
-		$from = trim(strtoupper($from));
-		$to = trim(strtoupper($to));
-		/**
-		 * Make sure we can handle the provided codes
-		 */
-		if(!$this->isSupportedCurrency($from)) {
-			throw new Exception\CurrencyNotSupportedException("{$from} is not a supported currency code");
-		}
-		if(!$this->isSupportedCurrency($to)) {
-			throw new Exception\CurrencyNotSupportedException("{$to} is not a supported currency code");
-		}
-	}
-	
-	/**
 	 * Utility Method to get a response from the given path and params
 	 * @param string $path
 	 * @param array $params
