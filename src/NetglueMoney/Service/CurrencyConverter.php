@@ -55,6 +55,12 @@ class CurrencyConverter {
 		return $this->conversionResult($amount, $rate);
 	}
 	
+	/**
+	 * Convert a Money instance
+	 * @param Money $money
+	 * @param string $to ISO Currency Code
+	 * @return Money Returns a new instance leaving the parameter $money alone
+	 */
 	public function convertMoney(Money $money, $to) {
 		$amount = $this->convert($money->getAmount(), $money->getCurrencyCode(), $to, $money->getDateTime());
 		return new Money($amount, $to, clone($money->getDateTime()));
@@ -73,8 +79,6 @@ class CurrencyConverter {
 		}
 		return (string) $value;
 	}
-	
-	
 	
 	/**
 	 * Set Options
