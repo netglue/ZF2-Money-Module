@@ -13,6 +13,7 @@ class AdapterPluginManager extends AbstractPluginManager {
 	 */
 	protected $invokableClasses = array(
 		'openexchangerates' => 'NetglueMoney\Adapter\OpenExchange\Adapter',
+		'eurofxref' => 'NetglueMoney\Adapter\EuroFxRef\Adapter',
 	);
 	
 	protected $shareByDefault = true;
