@@ -115,13 +115,16 @@ class Adapter extends AbstractAdapter {
 			}
 			return (string) $this->latestRates->rates->{$to};
 		}
+		
+		$scale = $this->getOptions()->getScale();
+		
 		// Compute Reverse Rate
 		if($to === $base) {
 			if(!isset($this->latestRates->rates->{$from})) {
 				throw new Exception\RuntimeException("{$from} is not available as a current rate");
 			}
 			$rev = (string) $this->latestRates->rates->{$from};
-			return bcdiv(1, $rev, $this->options->getScale());
+			return bcdiv(1, $rev, $scale);
 		}
 		// Compute Cross Rate
 		if(!isset($this->latestRates->rates->{$to})) {
@@ -132,8 +135,8 @@ class Adapter extends AbstractAdapter {
 		}
 		$baseFrom = $this->latestRates->rates->{$from};
 		$baseTo = $this->latestRates->rates->{$to};
-		$revFrom = bcdiv(1, $baseFrom, $this->options->getScale());
-		return bcmul($baseTo, $revFrom, $this->options->getScale());
+		$revFrom = bcdiv(1, $baseFrom, $scale);
+		return bcmul($baseTo, $revFrom, $scale);
 	}
 	
 	/**
@@ -170,7 +173,7 @@ class Adapter extends AbstractAdapter {
 			$client->resetParameters();
 			$client->setMethod(Request::METHOD_GET);
 			$client->setUri($this->getBaseUri().$path);
-			$params['app_id'] = $this->options->getAppId();
+			$params['app_id'] = $this->getOptions()->getAppId();
 			$client->setParameterGet($params);
 			return $client->send();
 		} catch(HttpException $e) {
@@ -260,7 +263,7 @@ class Adapter extends AbstractAdapter {
 	 * @return bool
 	 */
 	public function supportsHistoricalRates() {
-		return $this->options->hasHistoricalCapability();
+		return $this->getOptions()->hasHistoricalCapability();
 	}
 	
 	/**
@@ -269,8 +272,8 @@ class Adapter extends AbstractAdapter {
 	 */
 	public function getBaseUri() {
 		return sprintf('%s://%s',
-			$this->options->getScheme(),
-			rtrim($this->options->getBaseUri(), '/'));
+			$this->getOptions()->getScheme(),
+			rtrim($this->getOptions()->getBaseUri(), '/'));
 	}
 	
 	/**
@@ -278,8 +281,8 @@ class Adapter extends AbstractAdapter {
 	 * @return string
 	 */
 	public function getBaseCurrency() {
-		$code = $this->options->getBaseCurrency();
-		if( $code !== $this->options->getDefaultBaseCurrency() && false === $this->options->canChangeBaseCurrency() ) {
+		$code = $this->getOptions()->getBaseCurrency();
+		if( $code !== $this->getOptions()->getDefaultBaseCurrency() && false === $this->getOptions()->canChangeBaseCurrency() ) {
 			throw new OptionsException("Your account type does not allow alteration of the base currency");
 		}
 		return $code;
