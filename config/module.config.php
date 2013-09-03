@@ -6,8 +6,8 @@ return array(
 		'adapter' => array(
 			'name' => 'openExchangeRates',
 			'options' => array(
-				'appId' => NULL,
-				'accountType' => 'free',
+				//'appId' => NULL,
+				//'accountType' => 'free',
 			),
 		),
 		'cache' => array(
