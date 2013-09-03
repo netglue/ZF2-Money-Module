@@ -58,9 +58,8 @@ class AdapterTest extends TestCase {
 	}
 	
 	public function testGetLatestRates() {
-		$o = new Options;
-		$o->setAppId(OE_VALID_API_ID);
-		$a = new Adapter($o);
+		$a = $this->getValidAdapter();
+		$o = $a->getOptions();
 		$value = $a->getCurrentRates();
 		// Make sure the returned object is roughly what we expect based on the docs.
 		$this->assertInstanceOf('\StdClass', $value);
@@ -75,10 +74,9 @@ class AdapterTest extends TestCase {
 				'name' => 'filesystem'
 			)
 		));
-		$o = new Options;
-		$o->setAppId(OE_VALID_API_ID);
-		$a = new Adapter($o);
+		$a = $this->getValidAdapter();
 		$a->setCache($cache);
+		$o = $a->getOptions();
 		$value = $a->getCurrentRates();
 		$key = 'openExchangeLatest'.$o->getBaseCurrency();
 		$this->assertTrue($cache->hasItem($key));
@@ -90,7 +88,8 @@ class AdapterTest extends TestCase {
 	public function getValidAdapter() {
 		$o = new Options;
 		$o->setAppId(OE_VALID_API_ID);
-		$a = new Adapter($o);
+		$a = new Adapter;
+		$a->setOptions($o);
 		return $a;
 	}
 	
