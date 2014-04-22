@@ -25,11 +25,17 @@ use Zend\ModuleManager\Feature\ServiceProviderInterface;
  */
 use Zend\ModuleManager\Feature\FormElementProviderInterface;
 
+/**
+ * Validator Provider
+ */
+use Zend\ModuleManager\Feature\ValidatorProviderInterface;
+
 class Module implements
 	AutoloaderProviderInterface,
 	ServiceProviderInterface,
 	FormElementProviderInterface,
-	ConfigProviderInterface
+	ConfigProviderInterface,
+	ValidatorProviderInterface
 {
 
 	/**
@@ -75,13 +81,26 @@ class Module implements
 	public function getFormElementConfig()
 	{
 	    return array(
-	        'invokables' => array(
-	            'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
+	        'factories' => array(
+	            'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Factory\CurrencySelectFactory',
 	        ),
 	        'aliases' => array(
 	            'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
 	        ),
 	    );
 	}
+
+    /**
+     * Get validator config
+     * @return array
+     */
+    public function getValidatorConfig()
+    {
+        return array(
+            'factories' => array(
+                'NetglueMoney\Validator\CurrencyCode' => 'NetglueMoney\Factory\CurrencyCodeValidatorFactory',
+            ),
+        );
+    }
 
 }
