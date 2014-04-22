@@ -33,19 +33,21 @@ class SelectCurrency extends Select implements InputProviderInterface
     protected $validator;
 
     /**
-     * Init - Adds Options
-     * @return void
+     * @return array
      */
-    public function init()
+    public function getValueOptions()
     {
-        $names = Currency::getAvailableCurrencyNames();
-        $codes = $this->getCurrencyList()->getAllow();
-        $options = array();
-        foreach($codes as $code) {
-            $name = $this->getDisplayNames() ? $names[$code] : $code;
-            $options[$code] = $name;
+        if(!count($this->valueOptions)) {
+            $names = Currency::getAvailableCurrencyNames();
+            $codes = $this->getCurrencyList()->getAllow();
+            $options = parent::getValueOptions();
+            foreach($codes as $code) {
+                $name = $this->getDisplayNames() ? $names[$code] : $code;
+                $options[$code] = $name;
+            }
+            $this->setValueOptions($options);
         }
-        $this->setValueOptions($options);
+        return parent::getValueOptions();
     }
 
     /**
@@ -74,6 +76,7 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function setDisplayNames($flag)
     {
+        var_dump('CALLED');
         $this->setOption('displayNames', (bool) $flag);
         return $this;
     }
