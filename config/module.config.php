@@ -3,6 +3,10 @@
 return array(
 
 	'ng_money' => array(
+
+		'allowCurrencies' => NULL,
+		'excludeCurrencies' => NULL,
+
 		'adapter' => array(
 			'name' => 'openExchangeRates',
 			'options' => array(
@@ -23,18 +27,14 @@ return array(
 			'precision' => 2,
 			'roundMode' => PHP_ROUND_HALF_UP,
 		),
+
 	),
 
 	'service_manager' => array(
 		'factories' => array(
 			'CurrencyConverter' => 'NetglueMoney\Service\CurrencyConverterFactory',
+			'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
 		),
 	),
 
-
-	'view_manager' => array(
-		'template_path_stack' => array(
-			__DIR__ . '/../view',
-		),
-	),
 );
