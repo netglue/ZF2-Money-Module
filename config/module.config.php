@@ -30,11 +30,4 @@ return array(
 
 	),
 
-	'service_manager' => array(
-		'factories' => array(
-			'CurrencyConverter' => 'NetglueMoney\Service\CurrencyConverterFactory',
-			'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
-		),
-	),
-
 );

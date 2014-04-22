@@ -45,7 +45,12 @@ class Module implements
 	 */
 	public function getServiceConfig()
 	{
-		return array();
+		return array(
+		    'factories' => array(
+                'CurrencyConverter' => 'NetglueMoney\Service\CurrencyConverterFactory',
+			    'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
+            ),
+		);
 	}
 
 	/**
