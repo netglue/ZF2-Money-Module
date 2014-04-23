@@ -119,4 +119,30 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(100, $c->getSubUnit());
     }
+
+    /**
+     * covers \NetglueMoney\Money\Currency::getAvailableCurrencies
+     */
+    public function testGetAvailableCurencies()
+    {
+        $array = Currency::getAvailableCurrencies();
+        $this->assertInternalType('array', $array);
+        $this->assertContainsOnly('string', $array);
+        foreach($array as $code) {
+            $this->assertRegExp('/^[A-Z]{3}$/', $code);
+        }
+    }
+
+    /**
+     * covers \NetglueMoney\Money\Currency::getAvailableCurrencyNames
+     */
+    public function testGetAvailableCurencyNames()
+    {
+        $array = Currency::getAvailableCurrencyNames();
+        $this->assertInternalType('array', $array);
+        $this->assertContainsOnly('string', $array);
+        foreach($array as $code => $name) {
+            $this->assertRegExp('/^[A-Z]{3}$/', $code);
+        }
+    }
 }
