@@ -90,6 +90,16 @@ class MoneyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers  \NetglueMoney\Money\Money::getCurrencyCode
+     * @uses    \NetglueMoney\Money\Currency
+     * @depends testObjectCanBeConstructedForValidConstructorArguments
+     */
+    public function testCurrencyCodeCanBeRetrieved(Money $m)
+    {
+        $this->assertEquals('EUR', $m->getCurrencyCode());
+    }
+
+    /**
      * @covers \NetglueMoney\Money\Money::add
      * @covers \NetglueMoney\Money\Money::newMoney
      * @covers \NetglueMoney\Money\Money::assertSameCurrency

@@ -114,6 +114,17 @@ class Money
     }
 
     /**
+     * Returns the currency code of the monetary value represented by this
+     * object.
+     *
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        return $this->currency->getCurrencyCode();
+    }
+
+    /**
      * Returns a new Money object that represents the monetary value
      * of the sum of this Money object and another.
      *
