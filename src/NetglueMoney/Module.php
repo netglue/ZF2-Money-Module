@@ -30,6 +30,9 @@ use Zend\ModuleManager\Feature\FormElementProviderInterface;
  */
 use Zend\ModuleManager\Feature\ValidatorProviderInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Module implements
 	AutoloaderProviderInterface,
 	ServiceProviderInterface,

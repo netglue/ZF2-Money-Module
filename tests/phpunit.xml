@@ -15,6 +15,7 @@
 
 	<testsuite name="Netglue Money Module Tests">
 		<directory>./</directory>
+		<exclude>./NetglueMoneyTest/Adapter/OpenExchange/AdapterTest.php</exclude>
 	</testsuite>
 
   <filter>

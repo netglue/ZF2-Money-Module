@@ -8,6 +8,7 @@ use Zend\InputFilter\InputProviderInterface;
 use Zend\Validator\ValidatorInterface;
 use NetglueMoney\Validator\CurrencyCode as CurrencyValidator;
 use NetglueMoney\Service\CurrencyList;
+use Zend\Stdlib\ArrayUtils;
 
 class SelectCurrency extends Select implements InputProviderInterface
 {
@@ -70,13 +71,51 @@ class SelectCurrency extends Select implements InputProviderInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function setValue($value)
+    {
+        $multiple = $this->getAttribute('multiple');
+
+        if (true === $multiple || 'multiple' === $multiple) {
+            if ($value instanceof \Traversable) {
+                $value = ArrayUtils::iteratorToArray($value);
+            } elseif ($value == null) {
+                return parent::setValue(array());
+            } elseif (!is_array($value)) {
+                $value = (array)$value;
+            }
+
+            return parent::setValue(array_map(array($this, 'makeCurrency'), $value));
+        }
+
+        return parent::setValue($this->makeCurrency($value));
+    }
+
+    /**
+     * Make a currency object with the given code or return null if the code is empty/invalid
+     * @param string $value
+     * @return Currency|NULL
+     */
+    public function makeCurrency($code)
+    {
+        if(is_string($code)) {
+            try {
+                return new Currency($code);
+            } catch(\NetglueMoney\Exception\ExceptionInterface $e) {
+
+            }
+        }
+        return NULL;
+    }
+
+    /**
      * Set Option whether to display names or codes
      * @param bool $flag
      * @return self
      */
     public function setDisplayNames($flag)
     {
-        var_dump('CALLED');
         $this->setOption('displayNames', (bool) $flag);
         return $this;
     }
