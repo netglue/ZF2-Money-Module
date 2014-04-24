@@ -27,4 +27,10 @@ return array(
 		),
 
 	),
+
+	/**
+	 * Set a default locale if one isn't set system wide in php.ini so that locale dependent inputs
+	 * can properly interpret numbers such as 1,000.00 or 1.100.000,00
+	 */
+	// 'locale' => 'de_DE',
 );
