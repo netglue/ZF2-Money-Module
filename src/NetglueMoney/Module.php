@@ -95,6 +95,9 @@ class Module implements
 	        'aliases' => array(
 	            'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
 	        ),
+	        'invokables' => array(
+	            'NetglueMoney\Form\Element\MoneyElement',
+	        ),
 	    );
 	}
 
