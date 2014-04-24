@@ -75,8 +75,8 @@ class MoneyElementTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Zend\Form\ElementInterface', $amount);
         $this->assertNull($amount->getValue());
         $element->setAmount('1111.11');
-        $this->assertSame(1111.11, $element->getAmount());
-        $this->assertSame(1111.11, $amount->getValue());
+        $this->assertSame('1111.11', $element->getAmount());
+        $this->assertSame('1111.11', $amount->getValue());
     }
 
     public function testSetValue() {
@@ -112,23 +112,6 @@ class MoneyElementTest extends \PHPUnit_Framework_TestCase
         $element->setValue('1234');
     }
 
-    /**
-     * @expectedException Zend\Form\Exception\InvalidArgumentException
-     */
-    public function testSetAmountThrowsException()
-    {
-        $element = new MoneyElement;
-        $element->setAmount('Foo');
-    }
-
-    public function testElementHasValidatorManagerWhenCreatedViaServiceManager()
-    {
-        return;
-        $sl = bootstrap::getServiceManager();
-        $formElementManager = $sl->get('FormElementManager');
-        $element = $formElementManager->get('NetglueMoney\Form\Element\MoneyElement');
-        $this->assertInstanceOf('Zend\Validator\ValidatorPluginManager', $element->getValidatorPluginManager());
-    }
 
     public function testDefaultValidationViaForm()
     {

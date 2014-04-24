@@ -6,8 +6,10 @@ use NetglueMoney\Money\Money;
 
 use Zend\Validator\AbstractValidator;
 use Zend\Validator\ValidatorInterface;
+use Zend\Validator\ValidatorPluginManager;
+use Zend\Validator\ValidatorPluginManagerAwareInterface;
 
-class CompositeMoneyValidator extends AbstractValidator
+class CompositeMoneyValidator extends AbstractValidator implements ValidatorPluginManagerAwareInterface
 {
 
     const INVALID = 'invalid';
@@ -25,6 +27,7 @@ class CompositeMoneyValidator extends AbstractValidator
 	);
 
     protected $currencyValidator;
+    protected $validatorManager;
 
     /**
 	 * Whether the value is valid
@@ -40,7 +43,7 @@ class CompositeMoneyValidator extends AbstractValidator
             $this->error(self::INVALID);
 			return false;
         }
-        if(!array_key_exists('code') || !array_key_exists('amount')) {
+        if(!array_key_exists('code', $value) || !array_key_exists('amount', $value)) {
             $this->error(self::INVALID);
 			return false;
         }
@@ -60,7 +63,8 @@ class CompositeMoneyValidator extends AbstractValidator
     public function getCurrencyValidator()
     {
         if(!$this->currencyValidator) {
-            $this->currencyValidator = new CurrencyCode;
+            $manager = $this->getValidatorPluginManager();
+            $this->currencyValidator = $manager->get('NetglueMoney\Validator\CurrencyCode');
         }
         return $this->currencyValidator;
     }
@@ -71,4 +75,24 @@ class CompositeMoneyValidator extends AbstractValidator
         return $this;
     }
 
+    /**
+     * Set validator plugin manager
+     *
+     * @param ValidatorPluginManager $pluginManager
+     */
+    public function setValidatorPluginManager(ValidatorPluginManager $pluginManager)
+    {
+        $this->validatorManager = $pluginManager;
+        return $this;
+    }
+
+    /**
+     * Get validator plugin manager
+     *
+     * @return ValidatorPluginManager
+     */
+    public function getValidatorPluginManager()
+    {
+        return $this->validatorManager;
+    }
 }

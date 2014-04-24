@@ -12,13 +12,10 @@ use Zend\Form\FormFactoryAwareInterface;
 use Zend\InputFilter\InputProviderInterface;
 
 use Zend\Validator\ValidatorInterface;
-use Zend\Validator\ValidatorPluginManager;
-use Zend\Validator\ValidatorPluginManagerAwareInterface;
 
 class MoneyElement extends FormElement implements
     FormFactoryAwareInterface,
-    InputProviderInterface,
-    ValidatorPluginManagerAwareInterface
+    InputProviderInterface
 {
 
     /**
@@ -28,18 +25,6 @@ class MoneyElement extends FormElement implements
     protected $attributes = array(
 
     );
-
-    /**
-     * Currency Code Value
-     * @var string
-     */
-    protected $currencyCode;
-
-    /**
-     * Floating Point Number or Int
-     * @var string
-     */
-    protected $amount;
 
     /**
      * Currency Code Element
@@ -90,13 +75,6 @@ class MoneyElement extends FormElement implements
      */
     protected $factory;
 
-    /**
-     * Custom Validator
-     * @var NetglueMoney\Validator\CompositeMoneyValidator
-     */
-    protected $validator;
-
-    protected $validatorManager;
 
     /**
      * Return Currency code
@@ -104,7 +82,7 @@ class MoneyElement extends FormElement implements
      */
     public function getCurrencyCode()
     {
-        return $this->currencyCode;
+        return $this->getCurrencyElement()->getValue();
     }
 
     /**
@@ -113,7 +91,7 @@ class MoneyElement extends FormElement implements
      */
     public function getAmount()
     {
-        return $this->amount;
+        return $this->getAmountElement()->getValue();
     }
 
     /**
@@ -123,9 +101,7 @@ class MoneyElement extends FormElement implements
      */
     public function setCurrencyCode($code)
     {
-        $code = trim(strtoupper($code));
-        $this->currencyCode = empty($code) ? NULL : $code;
-        $this->getCurrencyElement()->setValue($this->currencyCode);
+        $this->getCurrencyElement()->setValue($code);
         return $this;
     }
 
@@ -137,15 +113,7 @@ class MoneyElement extends FormElement implements
      */
     public function setAmount($amount)
     {
-        if(!is_numeric($amount)) {
-            throw new FormException\InvalidArgumentException(sprintf(
-                '%s expects a numeric argument. received %s',
-                __FUNCTION__,
-                gettype($amount)
-            ));
-        }
-        $this->amount = (float) $amount;
-        $this->getAmountElement()->setValue($this->amount);
+        $this->getAmountElement()->setValue($amount);
         return $this;
     }
 
@@ -184,9 +152,13 @@ class MoneyElement extends FormElement implements
      */
     protected function createMoney()
     {
-        $currency = new Currency($this->getCurrencyCode());
-        $amount = (int) ($this->getAmount() * $currency->getSubUnit());
-        return new Money($amount, $currency);
+        try{
+            $currency = new Currency($this->getCurrencyCode());
+            $amount = (int) ($this->getAmount() * $currency->getSubUnit());
+            return new Money($amount, $currency);
+        } catch(\NetglueMoney\Exception\ExceptionInterface $e) {
+            return NULL;
+        }
     }
 
     /**
@@ -220,6 +192,7 @@ class MoneyElement extends FormElement implements
     {
         if(!$this->currencyElement) {
             $this->currencyElement = $this->getFormFactory()->createElement($this->getCurrencyElementSpec());
+            $this->currencyElement->setName($this->getName().'[code]');
         }
         return $this->currencyElement;
     }
@@ -241,6 +214,7 @@ class MoneyElement extends FormElement implements
     {
         if(!$this->amountElement) {
             $this->amountElement = $this->getFormFactory()->createElement($this->getAmountElementSpec());
+            $this->amountElement->setName($this->getName().'[amount]');
         }
         return $this->amountElement;
     }
@@ -267,7 +241,6 @@ class MoneyElement extends FormElement implements
 
             ),
             'validators' => array(
-                //$this->getValidator(),
                 array(
                     'name' => 'NetglueMoney\Validator\CompositeMoneyValidator',
                 ),
@@ -275,47 +248,4 @@ class MoneyElement extends FormElement implements
 		);
 	}
 
-    /**
-     * Set validator to return with input spec
-     * @param ValidatorInterface $validator
-     * @return self
-     */
-    public function setValidator(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-        return $this;
-    }
-
-    /**
-     * Return a default validator if noneset
-     * @return CompositeMoneyValidator|ValidatorInterface
-     */
-    public function getValidator()
-    {
-        if(NULL === $this->validator) {
-            $this->validator = new CompositeMoneyValidator;
-        }
-        return $this->validator;
-    }
-
-    /**
-     * Set validator plugin manager
-     *
-     * @param ValidatorPluginManager $pluginManager
-     */
-    public function setValidatorPluginManager(ValidatorPluginManager $pluginManager)
-    {
-        $this->validatorManager = $pluginManager;
-        return $this;
-    }
-
-    /**
-     * Get validator plugin manager
-     *
-     * @return ValidatorPluginManager
-     */
-    public function getValidatorPluginManager()
-    {
-        return $this->validatorManager;
-    }
 }

@@ -31,6 +31,12 @@ use Zend\ModuleManager\Feature\FormElementProviderInterface;
 use Zend\ModuleManager\Feature\ValidatorProviderInterface;
 
 /**
+ * View Helper Provider
+ */
+use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
+
+
+/**
  * @codeCoverageIgnore
  */
 class Module implements
@@ -38,7 +44,8 @@ class Module implements
 	ServiceProviderInterface,
 	FormElementProviderInterface,
 	ConfigProviderInterface,
-	ValidatorProviderInterface
+	ValidatorProviderInterface,
+	ViewHelperProviderInterface
 {
 
 	/**
@@ -96,7 +103,8 @@ class Module implements
 	            'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
 	        ),
 	        'invokables' => array(
-	            'NetglueMoney\Form\Element\MoneyElement',
+	            'NetglueMoney\Form\Element\MoneyElement' => 'NetglueMoney\Form\Element\MoneyElement',
+	            'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
 	        ),
 	    );
 	}
@@ -114,4 +122,15 @@ class Module implements
         );
     }
 
+    public function getViewHelperConfig()
+    {
+        return array(
+            'invokables' => array(
+                'NetglueMoney\Form\View\Helper\FormMoney' => 'NetglueMoney\Form\View\Helper\FormMoney',
+            ),
+            'aliases' => array(
+                'formMoney' => 'NetglueMoney\Form\View\Helper\FormMoney',
+            ),
+        );
+    }
 }
