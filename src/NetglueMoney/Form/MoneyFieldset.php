@@ -14,6 +14,39 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
     protected $allowedObjectBindingClass = 'NetglueMoney\Money\Money';
 
     /**
+     * Currency Code Element Specification
+     * @var array
+     */
+    protected $currencyElementSpec = array(
+        'name' => 'currency',
+        'type' => 'Zend\Form\Element\Text',
+        'options' => array(
+
+        ),
+        'attributes' => array(
+            'maxlength' => 3,
+            'required' => true,
+            'placeholder' => 'XXX',
+        ),
+    );
+
+    /**
+     * Amount Element Specification
+     * @var array
+     */
+    protected $amountElementSpec = array(
+        'name' => 'amount',
+        'type' => 'Zend\Form\Element\Text',
+        'options' => array(
+
+        ),
+        'attributes' => array(
+            'required' => true,
+            'placeholder' => '0.00',
+        ),
+    );
+
+    /**
      * Init
      * @return void
      */
@@ -28,18 +61,8 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
         $this->setHydrator(new MoneyHydrator);
         $this->setObject(new Money(0, new Currency('XXX')));
 
-        $this->add(array(
-            'name' => 'currency',
-            'type' => 'Zend\Form\Element\Text',
-            'attributes' => array(
-                'maxlength' => 3,
-                'placeholder' => 'XXX',
-            ),
-        ));
-        $this->add(array(
-            'name' => 'amount',
-            'type' => 'Zend\Form\Element\Text',
-        ));
+        $this->add($this->getCurrencyElementSpec());
+        $this->add($this->getAmountElementSpec());
     }
 
     /**
@@ -75,5 +98,23 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
                 ),
             ),
         );
+    }
+
+    /**
+     * Return currency element specification
+     * @return array
+     */
+    public function getCurrencyElementSpec()
+    {
+        return $this->currencyElementSpec;
+    }
+
+    /**
+     * Return amount element specification
+     * @return array
+     */
+    public function getAmountElementSpec()
+    {
+        return $this->amountElementSpec;
     }
 }

@@ -5,7 +5,7 @@ namespace NetglueMoney\Form\View\Helper;
 use Zend\Form\View\Helper\AbstractHelper;
 use Zend\Form\ElementInterface;
 
-use NetglueMoney\Form\Element\MoneyElement;
+use NetglueMoney\Form\MoneyFieldset;
 use NetglueMoney\Exception;
 
 
@@ -34,33 +34,35 @@ class FormMoney extends AbstractHelper
      * Render
      * @return string
      */
-    public function render(ElementInterface $element)
+    public function render(ElementInterface $fieldset)
     {
-        if(!$element instanceof MoneyElement) {
+        if(!$fieldset instanceof MoneyFieldset) {
             throw new Exception\InvalidArgumentException(sprintf(
-                '%s expects an instance of NetglueMoney\Form\Element\MoneyElement',
+                '%s expects an instance of NetglueMoney\Form\MoneyFieldset',
                 __METHOD__
             ));
         }
 
-        $atrs = $element->getAttributes();
+        $atrs = $fieldset->getAttributes();
         unset($atrs['name']);
         $view = $this->getView();
 
         $helper = $view->plugin('formText');
-        $codeElement = $helper($element->getCurrencyElement());
-        $amountElement = $helper($element->getAmountElement());
+        $codeElement = $helper($fieldset->get('currency'));
+        $amountElement = $helper($fieldset->get('amount'));
 
-        $markup = sprintf('<div %s>%s%s</div>',
+        $errorHelper = $view->plugin('formElementErrors');
+
+
+        $markup = sprintf('<div %s>%s%s%s%s</div>',
             $this->createAttributesString($atrs),
             $codeElement,
-            $amountElement
+            $amountElement,
+            $errorHelper($fieldset->get('currency')),
+            $errorHelper($fieldset->get('amount'))
         );
 
         return $markup;
-        var_dump($element->getAttributes());
-
-        return 'MONEY!';
     }
 
 }

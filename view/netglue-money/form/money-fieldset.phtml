@@ -1,0 +1,37 @@
+<?php
+
+$fieldset = $this->fieldset;
+
+$code = $fieldset->get('currency');
+$amount = $fieldset->get('amount');
+
+$isError = count($code->getMessages()) || count($amount->getMessages());
+
+$fieldsetClass = array(
+	'money-fieldset',
+	'control-group',
+);
+if($isError) {
+	$fieldsetClass[] = 'error';
+}
+$fieldsetClass = implode(' ', $fieldsetClass);
+
+
+$this->formElementErrors()->setAttributes(array('class' => 'text-error unstyled'));
+
+$code->setAttribute('class', 'input-mini currency-code');
+$amount->setAttribute('class', 'input money-amount');
+
+?>
+<fieldset class="<?= $fieldsetClass; ?>">
+	
+	<legend><?php echo $this->escapeHtml($fieldset->getLabel()); ?></legend>
+	
+	<?php
+		echo $this->formElement($code);
+		echo $this->formElement($amount);
+		echo $this->formElementErrors($code);
+		echo $this->formElementErrors($amount);
+	?>
+	
+</fieldset>
