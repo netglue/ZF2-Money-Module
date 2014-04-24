@@ -2,14 +2,20 @@
 
 namespace NetglueMoney\Form;
 
+use Locale;
+use NetglueMoney\I18n\LocaleAwareInterface;
 use Zend\Form\Fieldset;
 use Zend\InputFilter\InputFilterProviderInterface;
 use NetglueMoney\Hydrator\MoneyHydrator;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
 
-class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
+class MoneyFieldset extends Fieldset implements
+    InputFilterProviderInterface,
+    LocaleAwareInterface
 {
+
+    protected $locale;
 
     protected $allowedObjectBindingClass = 'NetglueMoney\Money\Money';
 
@@ -59,10 +65,15 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
          * instance given an array with these keys
          */
         $this->setHydrator(new MoneyHydrator);
-        $this->setObject(new Money(0, new Currency('XXX')));
+        $code = $this->getDefaultCurrencyCode();
+        if(!$code) {
+            $code = 'XXX';
+        }
+        $this->setObject(new Money(0, new Currency($code)));
 
         $this->add($this->getCurrencyElementSpec());
         $this->add($this->getAmountElementSpec());
+
     }
 
     /**
@@ -89,12 +100,19 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
                     array(
                         'name' => 'Zend\I18n\Filter\NumberParse',
                         'options' => array(
-                            'type' => \NumberFormatter::TYPE_CURRENCY
+                            'style' => \NumberFormatter::DECIMAL,
+                            'type' => \NumberFormatter::TYPE_DOUBLE,
+                            'locale' => $this->getLocale(),
                         ),
                     ),
                 ),
                 'validators' => array(
-                    array('name' => 'Zend\I18n\Validator\Float'),
+                    array(
+                        'name' => 'Zend\I18n\Validator\Float',
+                        'options' => array(
+                            'locale' => $this->getLocale(),
+                        ),
+                    ),
                 ),
             ),
         );
@@ -110,6 +128,17 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
     }
 
     /**
+     * Set the currency element specification
+     * @param array $spec
+     * @return self
+     */
+    public function setCurrencyElementSpec(array $spec)
+    {
+        $this->currencyElementSpec = $spec;
+        return $this;
+    }
+
+    /**
      * Return amount element specification
      * @return array
      */
@@ -117,4 +146,65 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
     {
         return $this->amountElementSpec;
     }
+
+    /**
+     * Set amount element specification
+     * @param array $spec
+     * @return self
+     */
+    public function setAmountElementSpec(array $spec)
+    {
+        $this->amountElementSpec = $spec;
+        return $this;
+    }
+
+    /**
+     * Sets the locale option
+     *
+     * @param  string|null $locale
+     * @return AbstractLocale
+     */
+    public function setLocale($locale = null)
+    {
+        $this->locale = $locale;
+        return $this;
+    }
+
+    /**
+     * Returns the locale option
+     *
+     * @return string
+     */
+    public function getLocale()
+    {
+        if (null === $this->locale) {
+            return Locale::getDefault();
+        }
+        return $this->locale;
+    }
+
+    /**
+     * Set Default Currency Code
+     * @param string $code
+     * @return self
+     */
+    public function setDefaultCurrencyCode($code)
+    {
+        $this->options['default_currency'] = (string) $code;
+        $this->currencyElementSpec['attributes']['value'] = (string) $code;
+        return $this;
+    }
+
+    /**
+     * Get Default Currency Code
+     * @return string|NULL
+     */
+    public function getDefaultCurrencyCode()
+    {
+        if(isset($this->options['default_currency'])) {
+            return $this->options['default_currency'];
+        }
+        return NULL;
+    }
+
 }

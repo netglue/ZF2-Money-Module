@@ -57,8 +57,17 @@ class Module implements
 	{
 		return array(
 		    'factories' => array(
-                'CurrencyConverter' => 'NetglueMoney\Service\CurrencyConverterFactory',
 			    'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
+			    'NetglueMoney\I18n\DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
+            ),
+            'invokables' => array(
+
+            ),
+            'aliases' => array(
+                'DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
+            ),
+            'initializers' => array(
+                'NetglueMoney\I18n\DefaultLocale',
             ),
 		);
 	}
@@ -106,6 +115,9 @@ class Module implements
 	            'NetglueMoney\Form\Element\MoneyElement' => 'NetglueMoney\Form\Element\MoneyElement',
 	            'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
 	        ),
+            'initializers' => array(
+                'NetglueMoney\I18n\DefaultLocale',
+            ),
 	    );
 	}
 
@@ -119,17 +131,17 @@ class Module implements
             'factories' => array(
                 'NetglueMoney\Validator\CurrencyCode' => 'NetglueMoney\Factory\CurrencyCodeValidatorFactory',
             ),
+            'initializers' => array(
+                'NetglueMoney\I18n\DefaultLocale',
+            ),
         );
     }
 
     public function getViewHelperConfig()
     {
         return array(
-            'invokables' => array(
-                'NetglueMoney\Form\View\Helper\FormMoney' => 'NetglueMoney\Form\View\Helper\FormMoney',
-            ),
-            'aliases' => array(
-                'formMoney' => 'NetglueMoney\Form\View\Helper\FormMoney',
+            'initializers' => array(
+                'NetglueMoney\I18n\DefaultLocale',
             ),
         );
     }
