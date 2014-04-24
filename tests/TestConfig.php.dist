@@ -8,6 +8,7 @@ return array(
 			__DIR__ . '/config/{,*.}{global,local}.php',
 		),
 		'module_paths' => array(
+			__DIR__.'/../../',
 			'vendor',
 		),
 	),
