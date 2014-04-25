@@ -7,7 +7,7 @@ interface LocaleAwareInterface
 
     /**
      * Set Locale for this instance
-     * @param string $locale
+     * @param  string               $locale
      * @return LocaleAwareInterface
      */
     public function setLocale($locale);

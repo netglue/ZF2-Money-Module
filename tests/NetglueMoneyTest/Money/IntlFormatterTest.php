@@ -46,7 +46,6 @@ use NetglueMoney\Money\IntlFormatter;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
 
-
 class IntlFormatterTest extends \PHPUnit_Framework_TestCase
 {
     /**

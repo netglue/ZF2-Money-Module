@@ -10,24 +10,24 @@ class CurrencyCode extends AbstractValidator
 {
 
     /**
-	 * Regex to test currency code
-	 */
-	const PATTERN = '/^[A-Z]{3}$/';
+     * Regex to test currency code
+     */
+    const PATTERN = '/^[A-Z]{3}$/';
 
     /**
-	 * Error: Not String
-	 */
-	const INVALID = 'notString';
+     * Error: Not String
+     */
+    const INVALID = 'notString';
 
-	/**
-	 * Error: Fails Regex
-	 */
-	const NOT_MATCH = 'noMatch';
+    /**
+     * Error: Fails Regex
+     */
+    const NOT_MATCH = 'noMatch';
 
-	/**
-	 * Error: Code does not exist, or is denied by currency list config
-	 */
-	const NOT_FOUND = 'notFound';
+    /**
+     * Error: Code does not exist, or is denied by currency list config
+     */
+    const NOT_FOUND = 'notFound';
 
     /**
      * Configured List of allowed currencies
@@ -35,51 +35,53 @@ class CurrencyCode extends AbstractValidator
      */
     protected $currencyList;
 
-	/**
-	 * Error Message Templates
-	 * @var array
-	 */
-	protected $messageTemplates = array(
-		self::INVALID => "Invalid type given. String expected",
-		self::NOT_MATCH => "Invalid currency code value. 3 uppercase letters expected",
-		self::NOT_FOUND => "The currency code provided does not match any known or allowed currency codes",
-	);
+    /**
+     * Error Message Templates
+     * @var array
+     */
+    protected $messageTemplates = array(
+        self::INVALID => "Invalid type given. String expected",
+        self::NOT_MATCH => "Invalid currency code value. 3 uppercase letters expected",
+        self::NOT_FOUND => "The currency code provided does not match any known or allowed currency codes",
+    );
 
-	/**
-	 * Whether the value is valid
-	 * @param mixed $value
-	 * @return bool
-	 */
+    /**
+     * Whether the value is valid
+     * @param  mixed $value
+     * @return bool
+     */
     public function isValid($value)
     {
-        if(!is_string($value)) {
-			$this->error(self::INVALID);
-			return false;
-		}
+        if (!is_string($value)) {
+            $this->error(self::INVALID);
 
-		$this->setValue($value);
+            return false;
+        }
 
-		if(!preg_match(self::PATTERN, $value)) {
-			$this->error(self::NOT_MATCH);
-			return false;
-		}
+        $this->setValue($value);
 
+        if (!preg_match(self::PATTERN, $value)) {
+            $this->error(self::NOT_MATCH);
 
-		if(!$this->getCurrencyList()->isAllowed($value)) {
-			$this->error(self::NOT_FOUND);
-		}
+            return false;
+        }
 
-		return count($this->getMessages()) === 0;
+        if (!$this->getCurrencyList()->isAllowed($value)) {
+            $this->error(self::NOT_FOUND);
+        }
+
+        return count($this->getMessages()) === 0;
     }
 
     /**
      * Set Currency list to check allowed currencies against
-     * @param CurrencyList $list
+     * @param  CurrencyList $list
      * @return self
      */
     public function setCurrencyList(CurrencyList $list)
     {
         $this->currencyList = $list;
+
         return $this;
     }
 
@@ -91,9 +93,10 @@ class CurrencyCode extends AbstractValidator
      */
     public function getCurrencyList()
     {
-        if(!$this->currencyList) {
+        if (!$this->currencyList) {
             $this->setCurrencyList(new CurrencyList);
         }
+
         return $this->currencyList;
     }
 

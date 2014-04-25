@@ -78,8 +78,8 @@ class Money
     );
 
     /**
-     * @param  integer                           $amount
-     * @param  \NetglueMoney\Money\Currency $currency
+     * @param  integer                                      $amount
+     * @param  \NetglueMoney\Money\Currency                 $currency
      * @throws \NetglueMoney\Money\InvalidArgumentException
      */
     public function __construct($amount, Currency $currency)
@@ -128,7 +128,7 @@ class Money
      * Returns a new Money object that represents the monetary value
      * of the sum of this Money object and another.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return \NetglueMoney\Money\Money
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -143,7 +143,7 @@ class Money
      * Returns a new Money object that represents the monetary value
      * of the difference of this Money object and another.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return \NetglueMoney\Money\Money
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -169,8 +169,8 @@ class Money
      * Returns a new Money object that represents the monetary value
      * of this Money object multiplied by a given factor.
      *
-     * @param  float   $factor
-     * @param  integer $roundingMode
+     * @param  float                                            $factor
+     * @param  integer                                          $roundingMode
      * @return \NetglueMoney\Money\Money
      * @throws \NetglueMoney\Exception\InvalidArgumentException
      */
@@ -191,7 +191,7 @@ class Money
      * Allocate the monetary value represented by this Money object
      * among N targets.
      *
-     * @param  integer $n
+     * @param  integer                     $n
      * @return \NetglueMoney\Money\Money[]
      */
     public function allocateToTargets($n)
@@ -216,7 +216,7 @@ class Money
      * Allocate the monetary value represented by this Money object
      * using a list of ratios.
      *
-     * @param  array $ratios
+     * @param  array                       $ratios
      * @return \NetglueMoney\Money\Money[]
      */
     public function allocateByRatios(array $ratios)
@@ -246,8 +246,8 @@ class Money
      * if the value of this Money object is considered to be respectively
      * less than, equal to, or greater than the other Money object.
      *
-     * @param  \NetglueMoney\Money\Money $other
-     * @return integer -1|0|1
+     * @param  \NetglueMoney\Money\Money                         $other
+     * @return integer                                           -1|0|1
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
     public function compareTo(Money $other)
@@ -264,7 +264,7 @@ class Money
     /**
      * Returns TRUE if this Money object equals to another.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return boolean
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -277,7 +277,7 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is greater than that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return boolean
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -290,7 +290,7 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is greater than or equal that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return boolean
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -303,7 +303,7 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is smaller than that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return boolean
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -316,7 +316,7 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is smaller than or equal that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money $other
+     * @param  \NetglueMoney\Money\Money                         $other
      * @return boolean
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
@@ -326,8 +326,8 @@ class Money
     }
 
     /**
-     * @param  \NetglueMoney\Money\Money $a
-     * @param  \NetglueMoney\Money\Money $b
+     * @param  \NetglueMoney\Money\Money                         $a
+     * @param  \NetglueMoney\Money\Money                         $b
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
      */
     private function assertSameCurrency(Money $a, Money $b)
@@ -338,7 +338,7 @@ class Money
     }
 
     /**
-     * @param  integer $amount
+     * @param  integer                   $amount
      * @return \NetglueMoney\Money\Money
      */
     private function newMoney($amount)

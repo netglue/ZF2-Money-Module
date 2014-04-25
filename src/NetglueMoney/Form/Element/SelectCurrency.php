@@ -38,16 +38,17 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function getValueOptions()
     {
-        if(!count($this->valueOptions)) {
+        if (!count($this->valueOptions)) {
             $names = Currency::getAvailableCurrencyNames();
             $codes = $this->getCurrencyList()->getAllow();
             $options = parent::getValueOptions();
-            foreach($codes as $code) {
+            foreach ($codes as $code) {
                 $name = $this->getDisplayNames() ? $names[$code] : $code;
                 $options[$code] = $name;
             }
             $this->setValueOptions($options);
         }
+
         return parent::getValueOptions();
     }
 
@@ -83,7 +84,7 @@ class SelectCurrency extends Select implements InputProviderInterface
             } elseif ($value == null) {
                 return parent::setValue(array());
             } elseif (!is_array($value)) {
-                $value = (array)$value;
+                $value = (array) $value;
             }
 
             return parent::setValue(array_map(array($this, 'makeCurrency'), $value));
@@ -94,29 +95,31 @@ class SelectCurrency extends Select implements InputProviderInterface
 
     /**
      * Make a currency object with the given code or return null if the code is empty/invalid
-     * @param string $value
+     * @param  string        $value
      * @return Currency|NULL
      */
     public function makeCurrency($code)
     {
-        if(is_string($code)) {
+        if (is_string($code)) {
             try {
                 return new Currency($code);
-            } catch(\NetglueMoney\Exception\ExceptionInterface $e) {
+            } catch (\NetglueMoney\Exception\ExceptionInterface $e) {
 
             }
         }
+
         return NULL;
     }
 
     /**
      * Set Option whether to display names or codes
-     * @param bool $flag
+     * @param  bool $flag
      * @return self
      */
     public function setDisplayNames($flag)
     {
         $this->setOption('displayNames', (bool) $flag);
+
         return $this;
     }
 
@@ -131,12 +134,13 @@ class SelectCurrency extends Select implements InputProviderInterface
 
     /**
      * Set validator to return with input spec
-     * @param ValidatorInterface $validator
+     * @param  ValidatorInterface $validator
      * @return self
      */
     public function setValidator(ValidatorInterface $validator)
     {
         $this->validator = $validator;
+
         return $this;
     }
 
@@ -146,20 +150,22 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function getValidator()
     {
-        if(NULL === $this->validator) {
+        if (NULL === $this->validator) {
             $this->validator = new CurrencyValidator;
         }
+
         return $this->validator;
     }
 
     /**
      * Set Currency list to check allowed currencies against
-     * @param CurrencyList $list
+     * @param  CurrencyList $list
      * @return self
      */
     public function setCurrencyList(CurrencyList $list)
     {
         $this->currencyList = $list;
+
         return $this;
     }
 
@@ -171,9 +177,10 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function getCurrencyList()
     {
-        if(!$this->currencyList) {
+        if (!$this->currencyList) {
             $this->setCurrencyList(new CurrencyList);
         }
+
         return $this->currencyList;
     }
 

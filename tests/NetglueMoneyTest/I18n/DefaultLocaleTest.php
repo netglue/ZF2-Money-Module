@@ -68,6 +68,7 @@ class DefaultLocaleTest extends \PHPUnit_Framework_TestCase
         ));
         $default->setLocaleFromConfig($sm);
         $this->assertSame('en_US', $default->getLocale());
+
         return $default;
     }
 
@@ -120,7 +121,6 @@ class DefaultLocaleTest extends \PHPUnit_Framework_TestCase
     }
 
 }
-
 
 class Tester implements LocaleAwareInterface
 {

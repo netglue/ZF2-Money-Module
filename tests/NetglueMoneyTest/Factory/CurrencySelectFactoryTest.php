@@ -4,7 +4,6 @@ namespace NetglueMoney\Factory;
 
 use Zend\ServiceManager\ServiceManager;
 
-
 class CurrencySelectFactoryTest extends \PHPUnit_Framework_TestCase
 {
 

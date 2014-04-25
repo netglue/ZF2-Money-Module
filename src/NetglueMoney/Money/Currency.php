@@ -1173,14 +1173,15 @@ class Currency
     public static function getAvailableCurrencyNames()
     {
         $names = array();
-        foreach(self::$currencies as $code => $info) {
+        foreach (self::$currencies as $code => $info) {
             $names[$code] = $info['display_name'];
         }
+
         return $names;
     }
 
     /**
-     * @param  string $currencyCode
+     * @param  string                                           $currencyCode
      * @throws \NetglueMoney\Exception\InvalidArgumentException
      */
     public function __construct($currencyCode)

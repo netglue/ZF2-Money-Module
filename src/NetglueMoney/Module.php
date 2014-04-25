@@ -14,7 +14,6 @@ use Zend\Loader\AutoloaderFactory;
 use Zend\Loader\StandardAutoloader;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 
-
 /**
  * Service Provider
  */
@@ -35,30 +34,29 @@ use Zend\ModuleManager\Feature\ValidatorProviderInterface;
  */
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
 
-
 /**
  * @codeCoverageIgnore
  */
 class Module implements
-	AutoloaderProviderInterface,
-	ServiceProviderInterface,
-	FormElementProviderInterface,
-	ConfigProviderInterface,
-	ValidatorProviderInterface,
-	ViewHelperProviderInterface
+    AutoloaderProviderInterface,
+    ServiceProviderInterface,
+    FormElementProviderInterface,
+    ConfigProviderInterface,
+    ValidatorProviderInterface,
+    ViewHelperProviderInterface
 {
 
-	/**
-	 * Return Service Config
-	 * @return array
-	 * @implements ServiceProviderInterface
-	 */
-	public function getServiceConfig()
-	{
-		return array(
-		    'factories' => array(
-			    'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
-			    'NetglueMoney\I18n\DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
+    /**
+     * Return Service Config
+     * @return array
+     * @implements ServiceProviderInterface
+     */
+    public function getServiceConfig()
+    {
+        return array(
+            'factories' => array(
+                'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
+                'NetglueMoney\I18n\DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
             ),
             'invokables' => array(
 
@@ -69,56 +67,56 @@ class Module implements
             'initializers' => array(
                 'NetglueMoney\I18n\DefaultLocale',
             ),
-		);
-	}
+        );
+    }
 
-	/**
-	 * Include/Return module configuration
-	 * @return array
-	 * @implements ConfigProviderInterface
-	 */
-	public function getConfig()
-	{
-		return include __DIR__ . '/../../config/module.config.php';
-	}
+    /**
+     * Include/Return module configuration
+     * @return array
+     * @implements ConfigProviderInterface
+     */
+    public function getConfig()
+    {
+        return include __DIR__ . '/../../config/module.config.php';
+    }
 
-	/**
-	 * Return autoloader configuration
-	 * @link http://framework.zend.com/manual/2.0/en/user-guide/modules.html
-	 * @return array
-	 */
-	public function getAutoloaderConfig()
-	{
+    /**
+     * Return autoloader configuration
+     * @link http://framework.zend.com/manual/2.0/en/user-guide/modules.html
+     * @return array
+     */
+    public function getAutoloaderConfig()
+    {
         return array(
-			AutoloaderFactory::STANDARD_AUTOLOADER => array(
-				StandardAutoloader::LOAD_NS => array(
-					__NAMESPACE__ => __DIR__,
-				),
-			),
-		);
-	}
+            AutoloaderFactory::STANDARD_AUTOLOADER => array(
+                StandardAutoloader::LOAD_NS => array(
+                    __NAMESPACE__ => __DIR__,
+                ),
+            ),
+        );
+    }
 
     /**
      * Get Form Element Config
      * @return array
      */
-	public function getFormElementConfig()
-	{
-	    return array(
-	        'factories' => array(
-	            'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Factory\CurrencySelectFactory',
-	        ),
-	        'aliases' => array(
-	            'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
-	        ),
-	        'invokables' => array(
-	            'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
-	        ),
+    public function getFormElementConfig()
+    {
+        return array(
+            'factories' => array(
+                'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Factory\CurrencySelectFactory',
+            ),
+            'aliases' => array(
+                'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
+            ),
+            'invokables' => array(
+                'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
+            ),
             'initializers' => array(
                 'NetglueMoney\I18n\DefaultLocale',
             ),
-	    );
-	}
+        );
+    }
 
     /**
      * Get validator config
