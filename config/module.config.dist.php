@@ -18,7 +18,7 @@ return array(
 		),
 
         /**
-         * If allowCurrencies is set, this option makes no sense, otherwise, it will
+         * If allowCurrencies is set, this option makes little sense. It will
          * remove each code from those available by default in form elements and validators
          * In custom config, you can set 'allowCurrencies' to null
          */
