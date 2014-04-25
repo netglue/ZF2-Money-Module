@@ -112,7 +112,6 @@ class Module implements
 	            'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
 	        ),
 	        'invokables' => array(
-	            'NetglueMoney\Form\Element\MoneyElement' => 'NetglueMoney\Form\Element\MoneyElement',
 	            'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
 	        ),
             'initializers' => array(
