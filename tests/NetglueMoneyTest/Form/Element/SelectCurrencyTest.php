@@ -80,10 +80,11 @@ class SelectCurrencyTest extends \PHPUnit_Framework_TestCase
         $element->setDisplayNames(false);
 
         $options = $element->getValueOptions();
-        foreach($options as $code => $label) {
+        foreach ($options as $code => $label) {
             $this->assertSame($code, $label);
             $this->assertTrue($list->isAllowed($code));
         }
+
         return $element;
     }
 

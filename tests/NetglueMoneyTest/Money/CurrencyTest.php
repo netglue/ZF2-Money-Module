@@ -72,7 +72,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
      */
     public function testCanBeCastToString(Currency $c)
     {
-        $this->assertEquals('EUR', (string)$c);
+        $this->assertEquals('EUR', (string) $c);
     }
 
     /**
@@ -128,7 +128,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
         $array = Currency::getAvailableCurrencies();
         $this->assertInternalType('array', $array);
         $this->assertContainsOnly('string', $array);
-        foreach($array as $code) {
+        foreach ($array as $code) {
             $this->assertRegExp('/^[A-Z]{3}$/', $code);
         }
     }
@@ -141,7 +141,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
         $array = Currency::getAvailableCurrencyNames();
         $this->assertInternalType('array', $array);
         $this->assertContainsOnly('string', $array);
-        foreach($array as $code => $name) {
+        foreach ($array as $code => $name) {
             $this->assertRegExp('/^[A-Z]{3}$/', $code);
         }
     }

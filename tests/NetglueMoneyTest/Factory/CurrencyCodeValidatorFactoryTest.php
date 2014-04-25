@@ -4,7 +4,6 @@ namespace NetglueMoney\Factory;
 
 use Zend\ServiceManager\ServiceManager;
 
-
 class CurrencyCodeValidatorFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -34,7 +33,5 @@ class CurrencyCodeValidatorFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('NetglueMoney\Validator\CurrencyCode', $valid);
         $this->assertInstanceOf('NetglueMoney\Service\CurrencyList', $valid->getCurrencyList());
     }
-
-
 
 }

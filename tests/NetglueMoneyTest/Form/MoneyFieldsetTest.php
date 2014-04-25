@@ -17,7 +17,6 @@ class MoneyFieldsetTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('currency', $fieldset->getCurrencyElement()->getName());
         $this->assertSame('amount', $fieldset->getAmountElement()->getName());
 
-
     }
 
     public function testSetGetLocale()
@@ -74,7 +73,6 @@ class MoneyFieldsetTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('GBP', $bound->money->getCurrencyCode());
     }
 
-
 }
 
 class TestModel
@@ -87,14 +85,16 @@ class TestModel
     public function setMoney(Money $money = NULL)
     {
         $this->money = $money;
+
         return $this;
     }
 
     public function getMoney()
     {
-        if(!$this->money) {
+        if (!$this->money) {
             $this->money = new Money(543210, new Currency('ZAR'));
         }
+
         return $this->money;
     }
 

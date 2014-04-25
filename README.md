@@ -32,6 +32,10 @@ There's a handy intializer you can bung into any of your service configurations 
 
 The initializer is not registered by default anywhere. All the instances in this module that use it have factories that supply it manually.
 
+### Currency Code Validator
+
+Validates basic code format and also uses the currency list service to exclude codes that are not 'allowed' or unknown
+
 ### Currency Select Element
 
 A select element that should be retrieved via the `FormElementManager` if you want it's validator and list of available currencies to all point to the same currency list.
@@ -52,3 +56,10 @@ As the fieldset should be able to convert arbitrary localized numbers to somethi
 
 ### 0.1.0
 * Initial Release contains the Money and Currency value objects, ZF2 module setup along with a Money Fieldset and companion Hydrator and other stuff...
+
+
+## Future Plans
+
+* Add currency conversion services and adapters for popular services.
+* Implement a useful and persistent cache for rates so that you can use the module to potentially look up historical rates as well as current ones.
+* Add command line jobs suitable for use with cron for getting hourly/daily rate changes.

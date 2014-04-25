@@ -76,7 +76,7 @@ class MoneyFieldset extends Fieldset implements
          */
         $this->setHydrator(new MoneyHydrator);
         $code = $this->getDefaultCurrencyCode();
-        if(!$code) {
+        if (!$code) {
             $code = 'XXX';
         }
         $this->setObject(new Money(0, new Currency($code)));
@@ -157,12 +157,13 @@ class MoneyFieldset extends Fieldset implements
 
     /**
      * Set the currency element specification
-     * @param array $spec
+     * @param  array $spec
      * @return self
      */
     public function setCurrencyElementSpec(array $spec)
     {
         $this->currencyElementSpec = $spec;
+
         return $this;
     }
 
@@ -177,24 +178,26 @@ class MoneyFieldset extends Fieldset implements
 
     /**
      * Set amount element specification
-     * @param array $spec
+     * @param  array $spec
      * @return self
      */
     public function setAmountElementSpec(array $spec)
     {
         $this->amountElementSpec = $spec;
+
         return $this;
     }
 
     /**
      * Sets the locale option
      *
-     * @param  string|null $locale
+     * @param  string|null    $locale
      * @return AbstractLocale
      */
     public function setLocale($locale = null)
     {
         $this->locale = $locale;
+
         return $this;
     }
 
@@ -208,18 +211,20 @@ class MoneyFieldset extends Fieldset implements
         if (null === $this->locale) {
             return Locale::getDefault();
         }
+
         return $this->locale;
     }
 
     /**
      * Set Default Currency Code
-     * @param string $code
+     * @param  string $code
      * @return self
      */
     public function setDefaultCurrencyCode($code)
     {
         $this->options['default_currency'] = (string) $code;
         $this->currencyElementSpec['attributes']['value'] = (string) $code;
+
         return $this;
     }
 
@@ -229,9 +234,10 @@ class MoneyFieldset extends Fieldset implements
      */
     public function getDefaultCurrencyCode()
     {
-        if(isset($this->options['default_currency'])) {
+        if (isset($this->options['default_currency'])) {
             return $this->options['default_currency'];
         }
+
         return NULL;
     }
 

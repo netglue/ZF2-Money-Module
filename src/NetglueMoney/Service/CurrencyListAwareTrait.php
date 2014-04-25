@@ -11,12 +11,13 @@ trait CurrencyListAwareTrait
 
     /**
      * Set Currency list to check allowed currencies against
-     * @param CurrencyList $list
+     * @param  CurrencyList $list
      * @return self
      */
     public function setCurrencyList(CurrencyList $list)
     {
         $this->currencyList = $list;
+
         return $this;
     }
 
@@ -28,9 +29,10 @@ trait CurrencyListAwareTrait
      */
     public function getCurrencyList()
     {
-        if(!$this->currencyList) {
+        if (!$this->currencyList) {
             $this->setCurrencyList(new CurrencyList);
         }
+
         return $this->currencyList;
     }
 

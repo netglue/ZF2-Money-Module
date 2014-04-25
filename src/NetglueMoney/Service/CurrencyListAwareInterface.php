@@ -6,7 +6,7 @@ interface CurrencyListAwareInterface
 {
     /**
      * Set Currency list to check allowed currencies against
-     * @param CurrencyList $list
+     * @param  CurrencyList $list
      * @return self
      */
     public function setCurrencyList(CurrencyList $list);

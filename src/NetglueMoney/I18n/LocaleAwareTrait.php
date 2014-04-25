@@ -15,12 +15,13 @@ trait LocaleAwareTrait
 
     /**
      * Set Locale for this instance
-     * @param string $locale
+     * @param  string $locale
      * @return self
      */
     public function setLocale($locale)
     {
         $this->locale = $locale;
+
         return $this;
     }
 
@@ -30,9 +31,10 @@ trait LocaleAwareTrait
      */
     public function getLocale()
     {
-        if(null === $this->locale) {
+        if (null === $this->locale) {
             $this->locale = Locale::getDefault();
         }
+
         return $this->locale;
     }
 
