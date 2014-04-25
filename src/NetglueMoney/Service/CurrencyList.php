@@ -3,6 +3,8 @@
 namespace NetglueMoney\Service;
 
 use NetglueMoney\Money\Currency;
+use NetglueMoney\Money\Money;
+
 use NetglueMoney\Exception;
 
 class CurrencyList
@@ -23,13 +25,18 @@ class CurrencyList
 
     /**
      * Constructor populates allowed codes with defaults and optionally filters those passed as an argument
+     * @param array|NULL $allow An array of currency codes to allow
+     * @param array|NULL $deny An array of currency codes to remove from the allowed list, or remove from the defaults if no allow is set
      * @return void
      */
-    public function __construct($allow = NULL)
+    public function __construct($allow = NULL, $deny = NULL)
     {
         $this->defaults = Currency::getAvailableCurrencies();
         if(NULL !== $allow) {
             $this->setAllow($allow);
+        }
+        if(NULL !== $deny) {
+            $this->remove($deny);
         }
     }
 
@@ -45,6 +52,15 @@ class CurrencyList
             $this->add($code);
         }
         return $this;
+    }
+
+    /**
+     * Return an array of all known currency codes
+     * @return array
+     */
+    public function getKnown()
+    {
+        return $this->defaults;
     }
 
     /**
@@ -76,20 +92,7 @@ class CurrencyList
      */
     public function add($code)
     {
-        if(!is_string($code)) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                '%s expects a string as it\'s single argument. Recieved %s',
-                __FUNCTION__,
-                gettype($code)
-            ));
-        }
-        $code = trim(strtoupper($code));
-        if(!in_array($code, $this->defaults, true)) {
-            throw new Exception\InvalidCurrencyCodeException(sprintf(
-                '%s is not a valid ISO 4217 Currency code',
-                $code
-            ));
-        }
+        $code = $this->assertValidCode($code);
         if(!is_array($this->allow)) {
             $this->allow = array();
         }
@@ -108,25 +111,50 @@ class CurrencyList
             foreach($code as $c) {
                 $this->remove($c);
             }
+
             return $this;
-        }
-        if(!is_string($code)) {
-            throw new Exception\InvalidArgumentException(sprintf(
-                '%s expects a string as it\'s single argument. Recieved %s',
-                __FUNCTION__,
-                gettype($code)
-            ));
         }
         if(!is_array($this->allow)) {
             $this->allow = $this->defaults;
         }
-        $code = trim(strtoupper($code));
+        $code = $this->assertValidCode($code);
         if($this->isAllowed($code)) {
             if($key = array_search($code, $this->allow)) {
                 unset($this->allow[$key]);
             }
         }
+
         return $this;
+    }
+
+    /**
+     * Ensure the given code is a known valid code
+     * @param string|Currency|Money $code
+     * @return string Normalised code
+     * @throws Exception\ExceptionInterface
+     */
+    protected function assertValidCode($code)
+    {
+        if($code instanceof Money) {
+            $code = $code->getCurrency();
+        }
+        if($code instanceof Currency) {
+            return (string) $code;
+        }
+        if(!is_string($code)) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                'Currency code should be a string. Recieved %s',
+                gettype($code)
+            ));
+        }
+        $code = trim(strtoupper($code));
+        if(!in_array($code, $this->defaults, true)) {
+            throw new Exception\InvalidCurrencyCodeException(sprintf(
+                '%s is not a valid ISO 4217 Currency code',
+                $code
+            ));
+        }
+        return $code;
     }
 
 }
