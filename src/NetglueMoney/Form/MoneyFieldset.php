@@ -9,14 +9,24 @@ use Zend\InputFilter\InputFilterProviderInterface;
 use NetglueMoney\Hydrator\MoneyHydrator;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
+use Zend\Stdlib\InitializableInterface;
 
 class MoneyFieldset extends Fieldset implements
     InputFilterProviderInterface,
-    LocaleAwareInterface
+    LocaleAwareInterface,
+    InitializableInterface
 {
 
+    /**
+     * Locale string used for interpreting inputted numbers
+     * @var string
+     */
     protected $locale;
 
+    /**
+     * Money instances are all we want
+     * @var string
+     */
     protected $allowedObjectBindingClass = 'NetglueMoney\Money\Money';
 
     /**
@@ -116,6 +126,24 @@ class MoneyFieldset extends Fieldset implements
                 ),
             ),
         );
+    }
+
+    /**
+     * Return the currency element
+     * @return \Zend\Form\ElementInterface
+     */
+    public function getCurrencyElement()
+    {
+        return $this->get('currency');
+    }
+
+    /**
+     * Return the amount element
+     * @return \Zend\Form\ElementInterface
+     */
+    public function getAmountElement()
+    {
+        return $this->get('amount');
     }
 
     /**
