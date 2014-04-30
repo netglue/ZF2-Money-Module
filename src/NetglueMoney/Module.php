@@ -140,6 +140,9 @@ class Module implements
             'initializers' => array(
                 'NetglueMoney\I18n\DefaultLocale',
             ),
+            'invokables' => array(
+                'moneyFormat' => 'NetglueMoney\View\Helper\MoneyFormat',
+            ),
         );
     }
 }
