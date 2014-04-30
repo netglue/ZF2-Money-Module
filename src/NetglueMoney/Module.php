@@ -47,6 +47,19 @@ class Module implements
 {
 
     /**
+     * @throws Exception\ExtensionNotLoadedException if ext/intl is not present
+     */
+    public function __construct()
+    {
+        if (!extension_loaded('intl')) {
+            throw new Exception\ExtensionNotLoadedException(sprintf(
+                '%s component requires the intl PHP extension',
+                __NAMESPACE__
+            ));
+        }
+    }
+
+    /**
      * Return Service Config
      * @return array
      * @implements ServiceProviderInterface
@@ -139,6 +152,9 @@ class Module implements
         return array(
             'initializers' => array(
                 'NetglueMoney\I18n\DefaultLocale',
+            ),
+            'invokables' => array(
+                'moneyFormat' => 'NetglueMoney\View\Helper\MoneyFormat',
             ),
         );
     }
