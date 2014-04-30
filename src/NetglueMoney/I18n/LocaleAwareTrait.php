@@ -20,7 +20,7 @@ trait LocaleAwareTrait
      */
     public function setLocale($locale)
     {
-        $this->locale = $locale;
+        $this->locale = (string) $locale;
 
         return $this;
     }
