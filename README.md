@@ -50,9 +50,23 @@ A fieldset that will accept or hydrate to an instance of `NetglueMoney\Money\Mon
 
 As the fieldset should be able to convert arbitrary localized numbers to something useful, i.e. in UK, 1,234.56 is 1234.56 and in DE, 1.234,56 - there's a locale initializer that provides either a configured default locale or the one found in `Locale::getDefault()`
 
+### View Helpers
 
+#### moneyFormat()
+
+Largely based on `Zend\I18n\View\Helper\CurrencyFormat`, but the parameters have been changed:
+	
+	$money = new Money(123456, new Currency('GBP'));
+	echo $this->moneyFormat($money); // £1,234.56 (Assuming default locale of en_GB)
+	echo $this->moneyFormat($money, 'de_DE'); // 1.234,56 £
+	echo $this->moneyFormat($money, 'de_DE', false); // 1.234 £
+	
+You can also specify custom format patterns - look at NumberFormatter docs for more info.
 
 ## Changelog
+
+### 0.1.1
+* Added `moneyFormat` view helper and tests
 
 ### 0.1.0
 * Initial Release contains the Money and Currency value objects, ZF2 module setup along with a Money Fieldset and companion Hydrator and other stuff...
