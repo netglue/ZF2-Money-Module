@@ -124,6 +124,7 @@ class Module implements
             ),
             'invokables' => array(
                 'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
+                'NetglueMoney\Form\Element\Money' => 'NetglueMoney\Form\Element\Money',
             ),
             'initializers' => array(
                 'NetglueMoney\I18n\DefaultLocale',
@@ -155,6 +156,7 @@ class Module implements
             ),
             'invokables' => array(
                 'moneyFormat' => 'NetglueMoney\View\Helper\MoneyFormat',
+                'formMoney' => 'NetglueMoney\View\Helper\FormMoney',
             ),
         );
     }
