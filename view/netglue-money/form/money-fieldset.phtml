@@ -34,7 +34,7 @@ $amount->setAttribute('class', 'input money-amount');
 	
 	<?php
 		echo $this->formElement($code);
-		echo $this->formElement($amount);
+		echo $this->formMoney($amount);
 		echo $this->formElementErrors($code);
 		echo $this->formElementErrors($amount);
 	?>

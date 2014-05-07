@@ -52,7 +52,7 @@ class MoneyFieldset extends Fieldset implements
      */
     protected $amountElementSpec = array(
         'name' => 'amount',
-        'type' => 'Zend\Form\Element\Text',
+        'type' => 'NetglueMoney\Form\Element\Money',
         'options' => array(
 
         ),
@@ -63,27 +63,46 @@ class MoneyFieldset extends Fieldset implements
     );
 
     /**
-     * Init
-     * @return void
+     * @param  null|int|string  $name    Optional name for the element
+     * @param  array            $options Optional options for the element
      */
-    public function init()
+    public function __construct($name = null, $options = array())
     {
-
+        parent::__construct($name, $options);
         /**
          * Use specific hydrator that converts a money object to an array
          * with the keys 'amount', 'currency' and returns a new money
          * instance given an array with these keys
          */
         $this->setHydrator(new MoneyHydrator);
+    }
+
+    /**
+     * Init
+     * @return void
+     */
+    public function init()
+    {
         $code = $this->getDefaultCurrencyCode();
         if (!$code) {
             $code = 'XXX';
         }
-        $this->setObject(new Money(0, new Currency($code)));
+        $this->initialiseElements();
+        $this->setMoney(new Money(0, new Currency($code)));
+    }
 
-        $this->add($this->getCurrencyElementSpec());
-        $this->add($this->getAmountElementSpec());
-
+    /**
+     * Adds the required elements if they do not already exist
+     * @return void
+     */
+    protected function initialiseElements()
+    {
+        if(!$this->has('currency')) {
+            $this->add($this->getCurrencyElementSpec());
+        }
+        if(!$this->has('amount')) {
+            $this->add($this->getAmountElementSpec());
+        }
     }
 
     /**
@@ -126,6 +145,27 @@ class MoneyFieldset extends Fieldset implements
                 ),
             ),
         );
+    }
+
+    /**
+     * Set the given money object as the bound object, and populate the form fields with the values
+     * @param Money $money
+     */
+    public function setMoney(Money $money)
+    {
+        $this->setObject($money);
+        $this->initialiseElements();
+        $this->populateValues($this->extract());
+        return $this;
+    }
+
+    /**
+     * Return the bound Money object if any
+     * @return Money|NULL
+     */
+    public function getMoney()
+    {
+        return $this->getObject();
     }
 
     /**

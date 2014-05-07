@@ -24,7 +24,8 @@ class MoneyHydrator implements HydratorInterface
                 __METHOD__
             ));
         }
-        $amount = (float) ($object->getAmount() / $object->getCurrency()->getSubUnit());
+        $subUnit = $object->getCurrency()->getSubUnit();
+        $amount = (float) ($object->getAmount() / $subUnit);
 
         return array(
             'amount' => $amount,
