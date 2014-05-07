@@ -73,6 +73,24 @@ class MoneyFieldsetTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('GBP', $bound->money->getCurrencyCode());
     }
 
+    public function testSetMoneySetsBoundObject()
+    {
+        $fieldset = new MoneyFieldset;
+        $money = new Money(123, new Currency('GBP'));
+        $fieldset->setMoney($money);
+        $this->assertSame($money, $fieldset->getObject());
+        $this->assertSame($money, $fieldset->getMoney());
+    }
+
+    public function testSetMoneySetsElementValues()
+    {
+        $fieldset = new MoneyFieldset;
+        $money = new Money(123, new Currency('GBP'));
+        $fieldset->setMoney($money);
+        $this->assertEquals(1.23, $fieldset->getAmountElement()->getValue());
+        $this->assertEquals('GBP', $fieldset->getCurrencyElement()->getValue());
+    }
+
 }
 
 class TestModel
