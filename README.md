@@ -2,6 +2,8 @@
 
 A Zend Framework 2 module intended to make it easier to work with money.
 
+[![Code Climate](https://codeclimate.com/github/netglue/ZF2-Money-Module/badges/gpa.svg)](https://codeclimate.com/github/netglue/ZF2-Money-Module) [![Test Coverage](https://codeclimate.com/github/netglue/ZF2-Money-Module/badges/coverage.svg)](https://codeclimate.com/github/netglue/ZF2-Money-Module)
+
 Essentially, this module imports [Sebastian Bergmann's Money Library](https://github.com/sebastianbergmann/money) but probably controversially doesn't use it as a dependency with composer etc. The reason for this in the first instance was to get access to private static member vars in `Currency` but in future I will likely want to modify the basic value objects more.
 
 It's important to note that the Money value object stores the amount as an integer, the given currencies' smallest unit.
