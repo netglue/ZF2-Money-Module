@@ -67,6 +67,9 @@ You can also specify custom format patterns - look at NumberFormatter docs for m
 
 ## Changelog
 
+### 0.1.3
+* Merged in changes from 1.5.0 of [sebastianbergmann/money](https://github.com/sebastianbergmann/money)
+
 ### 0.1.2
 * Added `formMoney` view helper and tests for rendering text inputs that are intended to be used for inputting money. Accepts locale and uses a number formatter to format the input value to a locale string
 * Added `setMoney()` and `getMoney()` methods to the money fieldset so it's easier to use when not binding an entity in a specific form and/or not being used with the form element manager
