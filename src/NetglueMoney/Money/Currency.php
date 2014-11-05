@@ -2,7 +2,7 @@
 /**
  * Money
  *
- * Copyright (c) 2012-2013, Sebastian Bergmann <sebastian@phpunit.de>.
+ * Copyright (c) 2012-2014, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
  *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2012-2013 Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  */
@@ -50,7 +50,7 @@ use NetglueMoney\Exception;
  *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2012-2013 Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  * @see        http://docs.oracle.com/javase/7/docs/api/java/util/Currency.html
@@ -1181,7 +1181,7 @@ class Currency
     }
 
     /**
-     * @param  string                                           $currencyCode
+     * @param  string $currencyCode
      * @throws \NetglueMoney\Exception\InvalidArgumentException
      */
     public function __construct($currencyCode)
@@ -1193,6 +1193,23 @@ class Currency
         }
 
         $this->currencyCode = $currencyCode;
+    }
+
+    /**
+     * @param string $code
+     * @param string $displayName
+     * @param integer $numericCode
+     * @param integer $defaultFractionDigits
+     * @param integer $subUnit
+     */
+    public static function addCurrency($code, $displayName, $numericCode, $defaultFractionDigits, $subUnit)
+    {
+        self::$currencies[$code] = array(
+            'display_name' => $displayName,
+            'numeric_code' => $numericCode,
+            'default_fraction_digits' => $defaultFractionDigits,
+            'sub_unit' => $subUnit,
+        );
     }
 
     /**
@@ -1247,7 +1264,7 @@ class Currency
     }
 
     /**
-     * Returns a string representation of the currency
+     * Returns the ISO 4217 currency code of this currency.
      *
      * @return string
      */
