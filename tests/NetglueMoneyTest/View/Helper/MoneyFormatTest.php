@@ -9,6 +9,11 @@ use NumberFormatter;
 class MoneyFormatTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function setUp()
+    {
+        setlocale(LC_ALL, 'en_US');
+    }
+
     public function testCanInstantiate()
     {
         $helper = new MoneyFormat;
@@ -76,6 +81,7 @@ class MoneyFormatTest extends \PHPUnit_Framework_TestCase
 
     public function testGetFormatterReturnsFormatterWithDefaultLocale()
     {
+
         $helper = new MoneyFormat;
         $formatter = $helper->getFormatter();
         $this->assertInstanceOf('NumberFormatter', $formatter);

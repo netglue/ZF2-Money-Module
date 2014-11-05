@@ -7,6 +7,11 @@ use Zend\Form\Element;
 class FormMoneyTest extends \PHPUnit_Framework_TestCase
 {
 
+    public function setUp()
+    {
+        setlocale(LC_ALL, 'en_US');
+    }
+
     public function testCanInstantiate()
     {
         $helper = new FormMoney;
