@@ -9,6 +9,7 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        ini_set('intl.default_locale', 'en_US');
         setlocale(LC_ALL, 'en_US');
     }
 
@@ -70,7 +71,7 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
         $helper = new FormMoney;
         $formatter = $helper->getFormatter();
         $this->assertInstanceOf('NumberFormatter', $formatter);
-        $this->assertSame($helper->getLocale(), $formatter->getLocale());
+        $this->assertSame($helper->getLocale(Locale::VALID_LOCALE), $formatter->getLocale(Locale::VALID_LOCALE));
 
         $helper->setLocale('de_DE');
         $formatter = $helper->getFormatter();
