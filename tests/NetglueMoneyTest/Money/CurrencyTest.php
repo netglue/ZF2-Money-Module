@@ -2,7 +2,7 @@
 /**
  * Money
  *
- * Copyright (c) 2012-2013, Sebastian Bergmann <sebastian@phpunit.de>.
+ * Copyright (c) 2012-2014, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
  *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2012-2013 Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  */
@@ -51,7 +51,7 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
      */
     public function testExceptionIsRaisedForInvalidConstructorArgument()
     {
-        new Currency(NULL);
+        new Currency(null);
     }
 
     /**
@@ -64,6 +64,26 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('NetglueMoney\\Money\\Currency', $c);
 
         return $c;
+    }
+
+    /**
+     * @covers \NetglueMoney\Money\Currency::addCurrency
+     * @uses   \NetglueMoney\Money\Currency::__construct
+     */
+    public function testCustomCurrencyCanBeRegistered()
+    {
+        Currency::addCurrency(
+            'BTC',
+            'Bitcoin',
+            999,
+            4,
+            1000
+        );
+
+        $this->assertInstanceOf(
+            'NetglueMoney\Money\Currency',
+            new Currency('BTC')
+        );
     }
 
     /**

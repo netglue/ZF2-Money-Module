@@ -2,7 +2,7 @@
 /**
  * Money
  *
- * Copyright (c) 2012-2013, Sebastian Bergmann <sebastian@phpunit.de>.
+ * Copyright (c) 2012-2014, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
  *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2012-2013 Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  */
@@ -49,7 +49,7 @@ use NetglueMoney\Exception;
  *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
- * @copyright  2012-2013 Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  * @see        http://martinfowler.com/bliki/ValueObject.html
@@ -78,18 +78,58 @@ class Money
     );
 
     /**
-     * @param  integer                                      $amount
-     * @param  \NetglueMoney\Money\Currency                 $currency
+     * @param  integer                             $amount
+     * @param  \NetglueMoney\Money\Currency|string $currency
      * @throws \NetglueMoney\Money\InvalidArgumentException
      */
-    public function __construct($amount, Currency $currency)
+    public function __construct($amount, $currency)
     {
         if (!is_int($amount)) {
             throw new Exception\InvalidArgumentException('$amount must be an integer');
         }
 
         $this->amount   = $amount;
-        $this->currency = $currency;
+        $this->currency = $this->handleCurrencyArgument($currency);
+    }
+
+    /**
+     * Creates a Money object from a string such as "12.34"
+     *
+     * This method is designed to take into account the errors that can arise
+     * from manipulating floating point numbers.
+     *
+     * If the number of decimals in the string is higher than the currency's
+     * number of fractional digits then the value will be rounded to the
+     * currency's number of fractional digits.
+     *
+     * @param  string                                   $value
+     * @param  \NetglueMoney\Money\Currency|string $currency
+     * @return \NetglueMoney\Money\Money
+     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     */
+    public static function fromString($value, $currency)
+    {
+        if (!is_string($value)) {
+            throw new Exception\InvalidArgumentException('$value must be a string');
+        }
+
+        $currency = self::handleCurrencyArgument($currency);
+
+        return new static(
+            intval(
+                round(
+                    $currency->getSubUnit() *
+                    round(
+                        $value,
+                        $currency->getDefaultFractionDigits(),
+                        PHP_ROUND_HALF_UP
+                    ),
+                    0,
+                    PHP_ROUND_HALF_UP
+                )
+            ),
+            $currency
+        );
     }
 
     /**
@@ -131,12 +171,17 @@ class Money
      * @param  \NetglueMoney\Money\Money                         $other
      * @return \NetglueMoney\Money\Money
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws \NetglueMoney\Exception\OverflowException
      */
     public function add(Money $other)
     {
         $this->assertSameCurrency($this, $other);
 
-        return $this->newMoney($this->amount + $other->getAmount());
+        $value = $this->amount + $other->getAmount();
+
+        $this->assertIsInteger($value);
+
+        return $this->newMoney($value);
     }
 
     /**
@@ -146,12 +191,17 @@ class Money
      * @param  \NetglueMoney\Money\Money                         $other
      * @return \NetglueMoney\Money\Money
      * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws \NetglueMoney\Exception\OverflowException
      */
     public function subtract(Money $other)
     {
         $this->assertSameCurrency($this, $other);
 
-        return $this->newMoney($this->amount - $other->getAmount());
+        $value = $this->amount - $other->getAmount();
+
+        $this->assertIsInteger($value);
+
+        return $this->newMoney($value);
     }
 
     /**
@@ -183,7 +233,9 @@ class Money
         }
 
         return $this->newMoney(
-            intval(round($factor * $this->amount, 0, $roundingMode))
+            $this->castToInt(
+                round($factor * $this->amount, 0, $roundingMode)
+            )
         );
     }
 
@@ -193,9 +245,14 @@ class Money
      *
      * @param  integer                     $n
      * @return \NetglueMoney\Money\Money[]
+     * @throws \NetglueMoney\Exception\InvalidArgumentException
      */
     public function allocateToTargets($n)
     {
+        if (!is_int($n)) {
+            throw new Exception\InvalidArgumentException('$n must be an integer');
+        }
+
         $low       = $this->newMoney(intval($this->amount / $n));
         $high      = $this->newMoney($low->getAmount() + 1);
         $remainder = $this->amount % $n;
@@ -227,7 +284,7 @@ class Money
         $remainder = $this->amount;
 
         for ($i = 0; $i < count($ratios); $i++) {
-            $amount     = intval($this->amount * $ratios[$i] / $total);
+            $amount     = $this->castToInt($this->amount * $ratios[$i] / $total);
             $result[]   = $this->newMoney($amount);
             $remainder -= $amount;
         }
@@ -237,6 +294,36 @@ class Money
         }
 
         return $result;
+    }
+
+    /**
+     * Extracts a percentage of the monetary value represented by this Money
+     * object and returns an array of two Money objects:
+     * $original = $result['subtotal'] + $result['percentage'];
+     *
+     * Please note that this extracts the percentage out of a monetary value
+     * where the percentage is already included. If you want to get the
+     * percentage of the monetary value you should use multiplication
+     * (multiply(0.21), for instance, to calculate 21% of a monetary value
+     * represented by a Money object) instead.
+     *
+     * @param  float $percentage
+     * @param  integer $roundingMode
+     * @return \NetglueMoney\Money[]
+     * @see    https://github.com/sebastianbergmann/money/issues/27
+     */
+    public function extractPercentage($percentage, $roundingMode = PHP_ROUND_HALF_UP)
+    {
+        $percentage = $this->newMoney(
+            $this->castToInt(
+                round($this->amount / (100 + $percentage) * $percentage, 0, $roundingMode)
+            )
+        );
+
+        return array(
+            'percentage' => $percentage,
+            'subtotal'   => $this->subtract($percentage)
+        );
     }
 
     /**
@@ -338,11 +425,71 @@ class Money
     }
 
     /**
+     * Raises an exception if the amount is not an integer
+     *
+     * @param  number $amount
+     * @return number
+     * @throws \NetglueMoney\Exception\OverflowException
+     */
+    private function assertIsInteger($amount)
+    {
+        if (!is_int($amount)) {
+            throw new Exception\OverflowException;
+        }
+    }// @codeCoverageIgnore
+
+    /**
+     * Raises an exception if the amount is outside of the integer bounds
+     *
+     * @param  number $amount
+     * @return number
+     * @throws \NetglueMoney\Exception\OverflowException
+     */
+    private function assertInsideIntegerBounds($amount)
+    {
+        if (abs($amount) > PHP_INT_MAX) {
+            throw new Exception\OverflowException;
+        }
+    }// @codeCoverageIgnore
+
+    /**
+     * Cast an amount to an integer but ensure that the operation won't hide overflow
+     *
+     * @param number $amount
+     * @return int
+     * @throws \NetglueMoney\Exception\OverflowException
+     */
+    private function castToInt($amount)
+    {
+        $this->assertInsideIntegerBounds($amount);
+
+        return intval($amount);
+    }
+
+    /**
      * @param  integer                   $amount
      * @return \NetglueMoney\Money\Money
      */
     private function newMoney($amount)
     {
         return new Money($amount, $this->currency);
+    }
+
+    /**
+     * @param  \NetglueMoney\Money\Currency|string $currency
+     * @return \NetglueMoney\Money\Currency
+     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     */
+    private static function handleCurrencyArgument($currency)
+    {
+        if (!$currency instanceof Currency && !is_string($currency)) {
+            throw new Exception\InvalidArgumentException('$currency must be an object of type Currency or a string');
+        }
+
+        if (is_string($currency)) {
+            $currency = new Currency($currency);
+        }
+
+        return $currency;
     }
 }

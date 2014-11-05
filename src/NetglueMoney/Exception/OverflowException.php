@@ -43,12 +43,14 @@
 namespace NetglueMoney\Exception;
 
 /**
+ * Exception that is throw when when an amount overflows valid integers
+ *
  * @package    Money
  * @author     Sebastian Bergmann <sebastian@phpunit.de>
  * @copyright  2012-2014 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @link       http://www.github.com/sebastianbergmann/money
  */
-class CurrencyMismatchException extends InvalidArgumentException
+class OverflowException extends \OverflowException implements ExceptionInterface
 {
 }
