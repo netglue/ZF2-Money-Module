@@ -1,2 +1,5 @@
 vendor
 *.lock
+build/report
+build/logs
+phpunit.xml

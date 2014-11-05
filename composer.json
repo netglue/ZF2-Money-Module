@@ -27,6 +27,9 @@
     "php" : ">=5.3.3",
     "zendframework/zendframework" : "~2.2"
   },
+  "require-dev" : {
+    "codeclimate/php-test-reporter": "dev-master"
+  },
   "autoload" : {
     "psr-0" : {
       "NetglueMoney" : "src/"
