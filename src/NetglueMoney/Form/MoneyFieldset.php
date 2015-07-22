@@ -137,7 +137,7 @@ class MoneyFieldset extends Fieldset implements
                 ),
                 'validators' => array(
                     array(
-                        'name' => 'Zend\I18n\Validator\Float',
+                        'name' => 'Zend\I18n\Validator\IsFloat',
                         'options' => array(
                             'locale' => $this->getLocale(),
                         ),
