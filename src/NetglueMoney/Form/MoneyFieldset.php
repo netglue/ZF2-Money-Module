@@ -111,9 +111,14 @@ class MoneyFieldset extends Fieldset implements
      */
     public function getInputFilterSpecification()
     {
+        $required = true;
+        if ($this->hasAttribute('required')) {
+            $required = $this->getAttribute('required');
+        }
+
         return array(
             'currency' => array(
-                'required' => true,
+                'required' => $required,
                 'filters' => array(
                     array('name' => 'StringTrim'),
                     array('name' => 'StringToUpper'),
@@ -123,7 +128,7 @@ class MoneyFieldset extends Fieldset implements
                 ),
             ),
             'amount' => array(
-                'required' => true,
+                'required' => $required,
                 'filters' => array(
                     array('name' => 'StringTrim'),
                     array(
