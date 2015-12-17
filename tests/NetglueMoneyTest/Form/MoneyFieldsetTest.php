@@ -91,6 +91,30 @@ class MoneyFieldsetTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('GBP', $fieldset->getCurrencyElement()->getValue());
     }
 
+    public function testMinMaxOptionsUpdateInputFilterSpec()
+    {
+        $fieldset = new MoneyFieldset;
+        $spec = $fieldset->getInputFilterSpecification();
+        $this->assertCount(1, $spec['amount']['validators']);
+
+        $fieldset->setMinimumAmount(100, true, 'foo');
+
+        $spec = $fieldset->getInputFilterSpecification();
+        $this->assertCount(2, $spec['amount']['validators']);
+
+        $this->assertSame(100, $spec['amount']['validators'][1]['options']['min']);
+        $this->assertTrue($spec['amount']['validators'][1]['options']['inclusive']);
+
+        $fieldset->setMaximumAmount(100, true, 'foo');
+
+        $spec = $fieldset->getInputFilterSpecification();
+        $this->assertCount(3, $spec['amount']['validators']);
+
+        $this->assertSame(100, $spec['amount']['validators'][2]['options']['max']);
+        $this->assertTrue($spec['amount']['validators'][2]['options']['inclusive']);
+
+    }
+
 }
 
 class TestModel
