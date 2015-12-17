@@ -11,6 +11,9 @@ use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
 use Zend\Stdlib\InitializableInterface;
 
+use Zend\Validator\GreaterThan;
+use Zend\Validator\LessThan;
+
 class MoneyFieldset extends Fieldset implements
     InputFilterProviderInterface,
     LocaleAwareInterface,
@@ -61,6 +64,18 @@ class MoneyFieldset extends Fieldset implements
             'placeholder' => '0.00',
         ),
     );
+
+    /**
+     * Options used to seed the GreaterThan validator if required
+     * @var array
+     */
+    private $minimumOptions = [];
+
+    /**
+     * Options used to seed the LessThan validator if required
+     * @var array
+     */
+    private $maximumOptions = [];
 
     /**
      * @param  null|int|string  $name    Optional name for the element
@@ -116,6 +131,48 @@ class MoneyFieldset extends Fieldset implements
             $required = $this->getAttribute('required');
         }
 
+        $amountValidators = array(
+            array(
+                'name' => 'Zend\I18n\Validator\IsFloat',
+                'options' => array(
+                    'locale' => $this->getLocale(),
+                ),
+            ),
+        );
+
+        if(count($this->minimumOptions)) {
+            $spec = array(
+                'name' => 'Zend\Validator\GreaterThan',
+                'options' => array(
+                    'min' => $this->minimumOptions['min'],
+                    'inclusive' => $this->minimumOptions['inclusive'],
+                ),
+            );
+            if(!empty($this->minimumOptions['message'])) {
+                $spec['options']['messages'] = array(
+                    GreaterThan::NOT_GREATER => $this->minimumOptions['message'],
+                    GreaterThan::NOT_GREATER_INCLUSIVE => $this->minimumOptions['message'],
+                );
+            }
+            $amountValidators[] = $spec;
+        }
+        if(count($this->maximumOptions)) {
+            $spec = array(
+                'name' => 'Zend\Validator\LessThan',
+                'options' => array(
+                    'max' => $this->maximumOptions['max'],
+                    'inclusive' => $this->maximumOptions['inclusive'],
+                ),
+            );
+            if(!empty($this->maximumOptions['message'])) {
+                $spec['options']['messages'] = array(
+                    LessThan::NOT_LESS => $this->maximumOptions['message'],
+                    LessThan::NOT_LESS_INCLUSIVE => $this->maximumOptions['message'],
+                );
+            }
+            $amountValidators[] = $spec;
+        }
+
         return array(
             'currency' => array(
                 'required' => $required,
@@ -140,14 +197,7 @@ class MoneyFieldset extends Fieldset implements
                         ),
                     ),
                 ),
-                'validators' => array(
-                    array(
-                        'name' => 'Zend\I18n\Validator\IsFloat',
-                        'options' => array(
-                            'locale' => $this->getLocale(),
-                        ),
-                    ),
-                ),
+                'validators' => $amountValidators,
             ),
         );
     }
@@ -284,6 +334,36 @@ class MoneyFieldset extends Fieldset implements
         }
 
         return NULL;
+    }
+
+    /**
+     * Set a minimum amount with an optional error message
+     * @param float|int $min
+     * @param bool $inclusive
+     * @param string $message
+     */
+    public function setMinimumAmount($min, $inclusive = false, $message = null)
+    {
+        $this->minimumOptions = [
+            'min' => $min,
+            'inclusive' => $inclusive,
+            'message' => $message,
+        ];
+    }
+
+    /**
+     * Set a maximum amount with an optional error message
+     * @param float|int $max
+     * @param bool $inclusive
+     * @param string $message
+     */
+    public function setMaximumAmount($max, $inclusive = false, $message = null)
+    {
+        $this->maximumOptions = [
+            'max' => $max,
+            'inclusive' => $inclusive,
+            'message' => $message,
+        ];
     }
 
 }
