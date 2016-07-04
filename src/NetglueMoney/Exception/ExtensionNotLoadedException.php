@@ -2,6 +2,6 @@
 
 namespace NetglueMoney\Exception;
 
-class ExtenstionNotLoadedException extends DomainException
+class ExtensionNotLoadedException extends DomainException
 {
 }

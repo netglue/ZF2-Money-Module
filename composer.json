@@ -25,6 +25,7 @@
   ],
   "require" : {
     "php" : ">=5.3.3",
+    "ext-intl" : ">=1",
     "zendframework/zendframework" : "~2.4"
   },
   "require-dev" : {

@@ -2,6 +2,8 @@
 
 namespace NetglueMoney;
 
+use NetglueMoney\Exception;
+
 /**
  * Config Provider
  */
