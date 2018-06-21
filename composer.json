@@ -24,9 +24,9 @@
     }
   ],
   "require" : {
-    "php" : ">=5.3.3",
+    "php" : ">=7.1",
     "ext-intl" : ">=1",
-    "zendframework/zendframework" : "~2.4"
+    "zendframework/zendframework" : "^2"
   },
   "require-dev" : {
     "codeclimate/php-test-reporter": "dev-master"
