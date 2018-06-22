@@ -41,9 +41,11 @@
  * @link       http://www.github.com/sebastianbergmann/money
  */
 namespace NetglueMoneyTest\Money;
-use NetglueMoney\Money\Currency;
 
-class CurrencyTest extends \PHPUnit_Framework_TestCase
+use NetglueMoney\Money\Currency;
+use NetglueMoneyTest\Framework\TestCase;
+
+class CurrencyTest extends TestCase
 {
     /**
      * @covers            \NetglueMoney\Money\Currency::__construct

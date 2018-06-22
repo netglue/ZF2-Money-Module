@@ -1,16 +1,18 @@
 <?php
 
-namespace NetglueMoney\Service;
+namespace NetglueMoneyTest\Service;
 
 use NetglueMoney\Money\Currency;
 use NetglueMoney\Money\Money;
+use NetglueMoney\Service\CurrencyList;
+use NetglueMoneyTest\Framework\TestCase;
 
-class CurrencyListTest extends  \PHPUnit_Framework_TestCase
+class CurrencyListTest extends TestCase
 {
 
     public function testNewInstanceAllowsAnyValidCurrency()
     {
-        $list = new CurrencyList;
+        $list = new CurrencyList();
         $this->assertTrue($list->isAllowed('XXX'));
 
         return $list;
@@ -18,9 +20,9 @@ class CurrencyListTest extends  \PHPUnit_Framework_TestCase
 
     public function testConstructAppliesAllowList()
     {
-        $list = new CurrencyList(array(
+        $list = new CurrencyList([
             'USD',
-        ));
+        ]);
         $this->assertTrue($list->isAllowed('USD'));
         $this->assertFalse($list->isAllowed('XXX'));
         $this->assertCount(1, $list->getAllow());
@@ -28,9 +30,9 @@ class CurrencyListTest extends  \PHPUnit_Framework_TestCase
 
     public function testConstructAppliesDenyList()
     {
-        $list = new CurrencyList(NULL, array(
+        $list = new CurrencyList(null, [
             'USD',
-        ));
+        ]);
         $this->assertFalse($list->isAllowed('USD'));
         $this->assertTrue($list->isAllowed('XXX'));
     }
@@ -57,7 +59,7 @@ class CurrencyListTest extends  \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException NetglueMoney\Exception\InvalidArgumentException
+     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
      * @expectedExceptionMessage Currency code should be a string
      */
     public function testNonStringRaisesException()
@@ -67,7 +69,7 @@ class CurrencyListTest extends  \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException NetglueMoney\Exception\InvalidCurrencyCodeException
+     * @expectedException \NetglueMoney\Exception\InvalidCurrencyCodeException
      * @expectedExceptionMessage not a valid ISO 4217 Currency code
      */
     public function testInvalidCodeRaisesException()
@@ -81,12 +83,11 @@ class CurrencyListTest extends  \PHPUnit_Framework_TestCase
         $list = new CurrencyList;
         $money = new Money(100, new Currency('GBP'));
         $list->add($money);
-        $this->assertSame(array('GBP'), $list->getAllow());
+        $this->assertSame(['GBP'], $list->getAllow());
 
         $list = new CurrencyList;
         $code = new Currency('ZAR');
         $list->add($code);
-        $this->assertSame(array('ZAR'), $list->getAllow());
+        $this->assertSame(['ZAR'], $list->getAllow());
     }
-
 }

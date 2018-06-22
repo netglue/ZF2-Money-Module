@@ -1,37 +1,25 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\Factory;
+namespace NetglueMoneyTest\Factory;
 
-use Zend\ServiceManager\ServiceManager;
+use NetglueMoney\Factory\CurrencyCodeValidatorFactory;
+use NetglueMoney\Service\CurrencyList;
+use NetglueMoney\Validator\CurrencyCode;
+use Psr\Container\ContainerInterface;
+use NetglueMoneyTest\Framework\TestCase;
 
-class CurrencyCodeValidatorFactoryTest extends \PHPUnit_Framework_TestCase
+class CurrencyCodeValidatorFactoryTest extends TestCase
 {
 
-    public function testCanBeRegisteredAsFactory()
+    public function testFactory()
     {
-        $sm = new ServiceManager;
-        $sm->setService('config', array(
-            'ng_money' => array(
-                'allowCurrencies' => array(
-                    'GBP', 'USD',
-                ),
-                'excludeCurrencies' => array(
-                    'USD',
-                ),
-            ),
-        ));
-        $sm->setFactory('NetglueMoney\Service\CurrencyList', new CurrencyListFactory);
-
-        $validatorManager = new \Zend\Validator\ValidatorPluginManager;
-        $validatorManager->setServiceLocator($sm);
-
-        $sm->setService('ValidatorManager', $validatorManager);
-
-        $validatorManager->setFactory('mine', new CurrencyCodeValidatorFactory);
-
-        $valid = $validatorManager->get('mine');
-        $this->assertInstanceOf('NetglueMoney\Validator\CurrencyCode', $valid);
-        $this->assertInstanceOf('NetglueMoney\Service\CurrencyList', $valid->getCurrencyList());
+        $container = $this->prophesize(ContainerInterface::class);
+        $list = new CurrencyList();
+        $container->get(CurrencyList::class)->willReturn($list);
+        $factory = new CurrencyCodeValidatorFactory();
+        /** @var CurrencyCode $validator */
+        $validator = ($factory)($container->reveal());
+        $this->assertInstanceOf(CurrencyCode::class, $validator);
     }
-
 }

@@ -1,40 +1,38 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\View\Helper;
 
 use Zend\Form\View\Helper\FormInput;
 use Locale;
 use NumberFormatter;
-use NetglueMoney\I18n\LocaleAwareInterface;
 use Zend\Form\Exception;
 use Zend\Form\ElementInterface;
-class FormMoney extends FormInput implements LocaleAwareInterface
+
+class FormMoney extends FormInput
 {
 
     /**
      * Locale String
      * @var string|NULL
      */
-    protected $locale;
+    private $locale;
 
     /**
      * Formatter instances
      *
      * @var array
      */
-    protected $formatters = array();
+    private $formatters = [];
 
     /**
      * Sets the locale option
      *
      * @param  string|null    $locale
-     * @return AbstractLocale
      */
-    public function setLocale($locale = null)
+    public function setLocale($locale = null) : void
     {
         $this->locale = $locale;
-
-        return $this;
     }
 
     /**
@@ -42,7 +40,7 @@ class FormMoney extends FormInput implements LocaleAwareInterface
      *
      * @return string
      */
-    public function getLocale()
+    public function getLocale() : string
     {
         if (null === $this->locale) {
             return Locale::getDefault();
@@ -58,7 +56,7 @@ class FormMoney extends FormInput implements LocaleAwareInterface
      * @throws Exception\DomainException
      * @return string
      */
-    public function render(ElementInterface $element)
+    public function render(ElementInterface $element) : string
     {
         $name = $element->getName();
         if ($name === null || $name === '') {
@@ -84,7 +82,7 @@ class FormMoney extends FormInput implements LocaleAwareInterface
      * @param int|float $value
      * @return string
      */
-    public function formatValue($value)
+    public function formatValue($value) : string
     {
         $formatter = $this->getFormatter();
         return $formatter->format($value);
@@ -95,13 +93,13 @@ class FormMoney extends FormInput implements LocaleAwareInterface
      * @param string $locale
      * @return NumberFormatter
      */
-    public function getFormatter($locale = null)
+    public function getFormatter($locale = null) : NumberFormatter
     {
         if (null === $locale) {
             $locale = $this->getLocale();
         }
         $formatterId = md5(strtolower($locale));
-        if (!isset($this->formatters[$formatterId])) {
+        if (! isset($this->formatters[$formatterId])) {
             $this->formatters[$formatterId] = new NumberFormatter(
                 $locale,
                 NumberFormatter::DECIMAL
@@ -109,5 +107,4 @@ class FormMoney extends FormInput implements LocaleAwareInterface
         }
         return $this->formatters[$formatterId];
     }
-
 }

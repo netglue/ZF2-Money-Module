@@ -1,38 +1,32 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\Validator;
+namespace NetglueMoneyTest\Validator;
 
 use NetglueMoney\Service\CurrencyList;
+use NetglueMoney\Validator\CurrencyCode;
+use NetglueMoneyTest\Framework\TestCase;
 
-class CurrencyCodeTest extends  \PHPUnit_Framework_TestCase
+class CurrencyCodeTest extends TestCase
 {
 
-    public function testSetGetCurrencyList()
+    public function testBasic()
     {
-        $v = new CurrencyCode;
-        $list = new CurrencyList;
+        $validator = new CurrencyCode(new CurrencyList());
 
-        $this->assertInstanceOf('NetglueMoney\Service\CurrencyList', $v->getCurrencyList());
-        $this->assertSame($v, $v->setCurrencyList($list));
-        $this->assertSame($list, $v->getCurrencyList());
+        $this->assertFalse($validator->isValid(123));
+        $this->assertArrayHasKey(CurrencyCode::INVALID, $validator->getMessages());
 
-        return $v;
+        $this->assertFalse($validator->isValid([]));
+        $this->assertArrayHasKey(CurrencyCode::INVALID, $validator->getMessages());
+
+        $this->assertFalse($validator->isValid('ZZZZZ'));
+        $this->assertArrayHasKey(CurrencyCode::NOT_MATCH, $validator->getMessages());
+
+        $this->assertFalse($validator->isValid('ZZZ'));
+        $this->assertArrayHasKey(CurrencyCode::NOT_FOUND, $validator->getMessages());
+
+        $this->assertTrue($validator->isValid('GBP'));
+        $this->assertTrue($validator->isValid('USD'));
     }
-
-    /**
-     * @depends testSetGetCurrencyList
-     */
-    public function testBasic(CurrencyCode $v)
-    {
-
-        $this->assertFalse($v->isValid('123'));
-        $this->assertFalse($v->isValid(array()));
-
-        $this->assertTrue($v->isValid('GBP'));
-        $this->assertTrue($v->isValid('USD'));
-        $v->getCurrencyList()->add('GBP');
-        $this->assertTrue($v->isValid('GBP'));
-        $this->assertFalse($v->isValid('USD'));
-    }
-
 }

@@ -10,13 +10,6 @@ use NetglueMoney\Exception;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 
 /**
- * Autoloader
- */
-use Zend\Loader\AutoloaderFactory;
-use Zend\Loader\StandardAutoloader;
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-
-/**
  * Service Provider
  */
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
@@ -40,7 +33,6 @@ use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
  * @codeCoverageIgnore
  */
 class Module implements
-    AutoloaderProviderInterface,
     ServiceProviderInterface,
     FormElementProviderInterface,
     ConfigProviderInterface,
@@ -53,7 +45,7 @@ class Module implements
      */
     public function __construct()
     {
-        if (!extension_loaded('intl')) {
+        if (! extension_loaded('intl')) {
             throw new Exception\ExtensionNotLoadedException(sprintf(
                 '%s component requires the intl PHP extension',
                 __NAMESPACE__
@@ -68,21 +60,11 @@ class Module implements
      */
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
-                'NetglueMoney\Service\CurrencyList' => 'NetglueMoney\Factory\CurrencyListFactory',
-                'NetglueMoney\I18n\DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
-            ),
-            'invokables' => array(
-
-            ),
-            'aliases' => array(
-                'DefaultLocale' => 'NetglueMoney\I18n\DefaultLocale',
-            ),
-            'initializers' => array(
-                'NetglueMoney\I18n\DefaultLocale',
-            ),
-        );
+        return [
+            'factories' => [
+                Service\CurrencyList::class => Factory\CurrencyListFactory::class,
+            ],
+        ];
     }
 
     /**
@@ -96,42 +78,23 @@ class Module implements
     }
 
     /**
-     * Return autoloader configuration
-     * @link http://framework.zend.com/manual/2.0/en/user-guide/modules.html
-     * @return array
-     */
-    public function getAutoloaderConfig()
-    {
-        return array(
-            AutoloaderFactory::STANDARD_AUTOLOADER => array(
-                StandardAutoloader::LOAD_NS => array(
-                    __NAMESPACE__ => __DIR__,
-                ),
-            ),
-        );
-    }
-
-    /**
      * Get Form Element Config
      * @return array
      */
     public function getFormElementConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Factory\CurrencySelectFactory',
-            ),
-            'aliases' => array(
+            ],
+            'aliases' => [
                 'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
-            ),
-            'invokables' => array(
+            ],
+            'invokables' => [
                 'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
                 'NetglueMoney\Form\Element\Money' => 'NetglueMoney\Form\Element\Money',
-            ),
-            'initializers' => array(
-                'NetglueMoney\I18n\DefaultLocale',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -140,26 +103,20 @@ class Module implements
      */
     public function getValidatorConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'NetglueMoney\Validator\CurrencyCode' => 'NetglueMoney\Factory\CurrencyCodeValidatorFactory',
-            ),
-            'initializers' => array(
-                'NetglueMoney\I18n\DefaultLocale',
-            ),
-        );
+            ],
+        ];
     }
 
     public function getViewHelperConfig()
     {
-        return array(
-            'initializers' => array(
-                'NetglueMoney\I18n\DefaultLocale',
-            ),
-            'invokables' => array(
+        return [
+            'invokables' => [
                 'moneyFormat' => 'NetglueMoney\View\Helper\MoneyFormat',
                 'formMoney' => 'NetglueMoney\View\Helper\FormMoney',
-            ),
-        );
+            ],
+        ];
     }
 }

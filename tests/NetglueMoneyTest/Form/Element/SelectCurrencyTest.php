@@ -1,82 +1,48 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\Form\Element;
+namespace NetglueMoneyTest\Form\Element;
 
+use NetglueMoney\Form\Element\SelectCurrency;
+use NetglueMoney\Money\Currency;
 use NetglueMoney\Service\CurrencyList;
+use NetglueMoneyTest\Framework\TestCase;
 
-class SelectCurrencyTest extends \PHPUnit_Framework_TestCase
+class SelectCurrencyTest extends TestCase
 {
 
-    public function testCanCreateInstance()
+    public function testSetGetDisplayNames()
     {
-        $element = new SelectCurrency('myName', array());
-        $this->assertInstanceOf('NetglueMoney\Form\Element\SelectCurrency', $element);
-
-        return $element;
-    }
-
-    /**
-     * @depends testCanCreateInstance
-     */
-    public function testSetGetCurrencyList(SelectCurrency $element)
-    {
-        $list = new CurrencyList;
-        $list->add('GBP')->add('USD');
-
-        $this->assertInstanceOf('NetglueMoney\Service\CurrencyList', $element->getCurrencyList());
-        $this->assertSame($element, $element->setCurrencyList($list));
-        $this->assertSame($list, $element->getCurrencyList());
-
-        return $element;
-    }
-
-    /**
-     * @depends testSetGetCurrencyList
-     */
-    public function testSetGetDisplayNames(SelectCurrency $element)
-    {
+        $element = new SelectCurrency(new CurrencyList());
         $this->assertInternalType('bool', $element->getDisplayNames(), 'Display names options should be initially set to a bool');
-        $this->assertSame($element, $element->setDisplayNames(true));
+        $element->setDisplayNames(true);
         $this->assertTrue($element->getDisplayNames());
         $element->setDisplayNames(false);
         $this->assertFalse($element->getDisplayNames());
-
-        return $element;
     }
 
-    /**
-     * @depends testSetGetDisplayNames
-     */
-    public function testMakeCurrency(SelectCurrency $element)
+    public function testMakeCurrency()
     {
-        $this->assertInstanceOf('NetglueMoney\Money\Currency', $element->makeCurrency('ZAR'));
+        $element = new SelectCurrency(new CurrencyList());
+        $this->assertInstanceOf(Currency::class, $element->makeCurrency('ZAR'));
         $this->assertNull($element->makeCurrency(''));
-        $this->assertNull($element->makeCurrency(NULL));
+        $this->assertNull($element->makeCurrency(null));
         $this->assertNull($element->makeCurrency(100));
-
-        return $element;
     }
 
-    /**
-     * @depends testMakeCurrency
-     */
-    public function testGetInputSpecReturnsArray(SelectCurrency $element)
+    public function testGetInputSpecReturnsArray()
     {
+        $element = new SelectCurrency(new CurrencyList(), 'foo');
         $spec = $element->getInputSpecification();
         $this->assertInternalType('array', $spec);
         $this->assertArrayHasKey('name', $spec);
-        $this->assertSame($element->getName(), $spec['name']);
-
-        return $element;
+        $this->assertSame('foo', $spec['name']);
     }
 
-    /**
-     * @depends testGetInputSpecReturnsArray
-     */
-    public function testGetValueOptionsIsSeededWithList(SelectCurrency $element)
+    public function testGetValueOptionsIsSeededWithList()
     {
-        $list = $element->getCurrencyList();
-
+        $list = new CurrencyList();
+        $element = new SelectCurrency($list);
         $element->setDisplayNames(false);
 
         $options = $element->getValueOptions();
@@ -90,49 +56,37 @@ class SelectCurrencyTest extends \PHPUnit_Framework_TestCase
 
     public function testSetValueConvertsToCurrencyInstance()
     {
-        $element = new SelectCurrency('myName', array());
+        $element = new SelectCurrency(new CurrencyList());
         $element->setValue('GBP');
         $value = $element->getValue();
-        $this->assertInstanceOf('NetglueMoney\Money\Currency', $value);
+        $this->assertInstanceOf(Currency::class, $value);
     }
 
     public function testSetValueMultipleConvertsToCurrencyInstance()
     {
-        $element = new SelectCurrency('myName');
+        $element = new SelectCurrency(new CurrencyList());
         $element->setAttribute('multiple', true);
-        $element->setValue(array(
+        $element->setValue([
             'GBP', 'ZAR', 'USD',
-        ));
+        ]);
         $value = $element->getValue();
         $this->assertInternalType('array', $value);
-        $this->assertContainsOnlyInstancesOf('NetglueMoney\Money\Currency', $value);
+        $this->assertContainsOnlyInstancesOf(Currency::class, $value);
 
         $element->setValue('GBP');
         $value = $element->getValue();
         $this->assertInternalType('array', $value);
-        $this->assertContainsOnlyInstancesOf('NetglueMoney\Money\Currency', $value);
+        $this->assertContainsOnlyInstancesOf(Currency::class, $value);
 
-        $input = new \ArrayObject(array(
+        $input = new \ArrayObject([
             'GBP', 'USD'
-        ));
+        ]);
         $element->setValue($input);
         $value = $element->getValue();
         $this->assertInternalType('array', $value);
-        $this->assertContainsOnlyInstancesOf('NetglueMoney\Money\Currency', $value);
+        $this->assertContainsOnlyInstancesOf(Currency::class, $value);
 
-        $element->setValue(NULL);
-        $this->assertSame(array(), $element->getValue());
-    }
-
-    public function testGetSetValidator()
-    {
-        $element = new SelectCurrency('myName');
-        $v = $element->getValidator();
-        $this->assertInstanceOf('NetglueMoney\Validator\CurrencyCode', $v);
-        $this->assertSame($v, $element->getValidator());
-
-        $new = new \NetglueMoney\Validator\CurrencyCode;
-        $this->assertSame($element, $element->setValidator($new));
-        $this->assertSame($new, $element->getValidator());
+        $element->setValue(null);
+        $this->assertSame([], $element->getValue());
     }
 }

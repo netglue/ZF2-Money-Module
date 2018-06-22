@@ -1,23 +1,27 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\Form;
 
 use Locale;
-use NetglueMoney\I18n\LocaleAwareInterface;
+use NetglueMoney\Validator\CurrencyCode;
+use NumberFormatter;
+use Zend\Filter\StringToUpper;
+use Zend\Filter\StringTrim;
+use Zend\Form\ElementInterface;
 use Zend\Form\Fieldset;
+use Zend\I18n\Filter\NumberParse;
+use Zend\I18n\Validator\IsFloat;
 use Zend\InputFilter\InputFilterProviderInterface;
 use NetglueMoney\Hydrator\MoneyHydrator;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
-use Zend\Stdlib\InitializableInterface;
 
 use Zend\Validator\GreaterThan;
 use Zend\Validator\LessThan;
+use Zend\Form\Element as ZendElement;
 
-class MoneyFieldset extends Fieldset implements
-    InputFilterProviderInterface,
-    LocaleAwareInterface,
-    InitializableInterface
+class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
 {
 
     /**
@@ -30,40 +34,40 @@ class MoneyFieldset extends Fieldset implements
      * Money instances are all we want
      * @var string
      */
-    protected $allowedObjectBindingClass = 'NetglueMoney\Money\Money';
+    protected $allowedObjectBindingClass = Money::class;
 
     /**
      * Currency Code Element Specification
      * @var array
      */
-    protected $currencyElementSpec = array(
+    protected $currencyElementSpec = [
         'name' => 'currency',
-        'type' => 'Zend\Form\Element\Text',
-        'options' => array(
+        'type' => ZendElement\Text::class,
+        'options' => [
 
-        ),
-        'attributes' => array(
+        ],
+        'attributes' => [
             'maxlength' => 3,
             'required' => true,
             'placeholder' => 'XXX',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Amount Element Specification
      * @var array
      */
-    protected $amountElementSpec = array(
+    protected $amountElementSpec = [
         'name' => 'amount',
-        'type' => 'NetglueMoney\Form\Element\Money',
-        'options' => array(
+        'type' => Element\Money::class,
+        'options' => [
 
-        ),
-        'attributes' => array(
+        ],
+        'attributes' => [
             'required' => true,
             'placeholder' => '0.00',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Options used to seed the GreaterThan validator if required
@@ -81,7 +85,7 @@ class MoneyFieldset extends Fieldset implements
      * @param  null|int|string  $name    Optional name for the element
      * @param  array            $options Optional options for the element
      */
-    public function __construct($name = null, $options = array())
+    public function __construct($name = null, $options = [])
     {
         parent::__construct($name, $options);
         /**
@@ -99,7 +103,7 @@ class MoneyFieldset extends Fieldset implements
     public function init()
     {
         $code = $this->getDefaultCurrencyCode();
-        if (!$code) {
+        if (! $code) {
             $code = 'XXX';
         }
         $this->initialiseElements();
@@ -112,10 +116,10 @@ class MoneyFieldset extends Fieldset implements
      */
     protected function initialiseElements()
     {
-        if(!$this->has('currency')) {
+        if (! $this->has('currency')) {
             $this->add($this->getCurrencyElementSpec());
         }
-        if(!$this->has('amount')) {
+        if (! $this->has('amount')) {
             $this->add($this->getAmountElementSpec());
         }
     }
@@ -131,94 +135,93 @@ class MoneyFieldset extends Fieldset implements
             $required = $this->getAttribute('required');
         }
 
-        $amountValidators = array(
-            array(
-                'name' => 'Zend\I18n\Validator\IsFloat',
-                'options' => array(
+        $amountValidators = [
+            [
+                'name' => IsFloat::class,
+                'options' => [
                     'locale' => $this->getLocale(),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
-        if(count($this->minimumOptions)) {
-            $spec = array(
-                'name' => 'Zend\Validator\GreaterThan',
-                'options' => array(
+        if (count($this->minimumOptions)) {
+            $spec = [
+                'name' => GreaterThan::class,
+                'options' => [
                     'min' => $this->minimumOptions['min'],
                     'inclusive' => $this->minimumOptions['inclusive'],
-                ),
-            );
-            if(!empty($this->minimumOptions['message'])) {
-                $spec['options']['messages'] = array(
+                ],
+            ];
+            if (! empty($this->minimumOptions['message'])) {
+                $spec['options']['messages'] = [
                     GreaterThan::NOT_GREATER => $this->minimumOptions['message'],
                     GreaterThan::NOT_GREATER_INCLUSIVE => $this->minimumOptions['message'],
-                );
+                ];
             }
             $amountValidators[] = $spec;
         }
-        if(count($this->maximumOptions)) {
-            $spec = array(
-                'name' => 'Zend\Validator\LessThan',
-                'options' => array(
+        if (count($this->maximumOptions)) {
+            $spec = [
+                'name' => LessThan::class,
+                'options' => [
                     'max' => $this->maximumOptions['max'],
                     'inclusive' => $this->maximumOptions['inclusive'],
-                ),
-            );
-            if(!empty($this->maximumOptions['message'])) {
-                $spec['options']['messages'] = array(
+                ],
+            ];
+            if (! empty($this->maximumOptions['message'])) {
+                $spec['options']['messages'] = [
                     LessThan::NOT_LESS => $this->maximumOptions['message'],
                     LessThan::NOT_LESS_INCLUSIVE => $this->maximumOptions['message'],
-                );
+                ];
             }
             $amountValidators[] = $spec;
         }
 
-        return array(
-            'currency' => array(
+        return [
+            'currency' => [
                 'required' => $required,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                    array('name' => 'StringToUpper'),
-                ),
-                'validators' => array(
-                    array('name' => 'NetglueMoney\Validator\CurrencyCode'),
-                ),
-            ),
-            'amount' => array(
+                'filters' => [
+                    ['name' => StringTrim::class],
+                    ['name' => StringToUpper::class],
+                ],
+                'validators' => [
+                    ['name' => CurrencyCode::class],
+                ],
+            ],
+            'amount' => [
                 'required' => $required,
-                'filters' => array(
-                    array('name' => 'StringTrim'),
-                    array(
-                        'name' => 'Zend\I18n\Filter\NumberParse',
-                        'options' => array(
-                            'style' => \NumberFormatter::DECIMAL,
-                            'type' => \NumberFormatter::TYPE_DOUBLE,
+                'filters' => [
+                    ['name' => StringTrim::class],
+                    [
+                        'name' => NumberParse::class,
+                        'options' => [
+                            'style' => NumberFormatter::DECIMAL,
+                            'type' => NumberFormatter::TYPE_DOUBLE,
                             'locale' => $this->getLocale(),
-                        ),
-                    ),
-                ),
+                        ],
+                    ],
+                ],
                 'validators' => $amountValidators,
-            ),
-        );
+            ],
+        ];
     }
 
     /**
      * Set the given money object as the bound object, and populate the form fields with the values
      * @param Money $money
      */
-    public function setMoney(Money $money)
+    public function setMoney(Money $money) : void
     {
         $this->setObject($money);
         $this->initialiseElements();
         $this->populateValues($this->extract());
-        return $this;
     }
 
     /**
      * Return the bound Money object if any
      * @return Money|NULL
      */
-    public function getMoney()
+    public function getMoney() :? Money
     {
         return $this->getObject();
     }
@@ -227,8 +230,9 @@ class MoneyFieldset extends Fieldset implements
      * Return the currency element
      * @return \Zend\Form\ElementInterface
      */
-    public function getCurrencyElement()
+    public function getCurrencyElement() : ElementInterface
     {
+        $this->initialiseElements();
         return $this->get('currency');
     }
 
@@ -236,8 +240,9 @@ class MoneyFieldset extends Fieldset implements
      * Return the amount element
      * @return \Zend\Form\ElementInterface
      */
-    public function getAmountElement()
+    public function getAmountElement() : ElementInterface
     {
+        $this->initialiseElements();
         return $this->get('amount');
     }
 
@@ -253,13 +258,10 @@ class MoneyFieldset extends Fieldset implements
     /**
      * Set the currency element specification
      * @param  array $spec
-     * @return self
      */
-    public function setCurrencyElementSpec(array $spec)
+    public function setCurrencyElementSpec(array $spec) : void
     {
         $this->currencyElementSpec = $spec;
-
-        return $this;
     }
 
     /**
@@ -274,34 +276,18 @@ class MoneyFieldset extends Fieldset implements
     /**
      * Set amount element specification
      * @param  array $spec
-     * @return self
      */
-    public function setAmountElementSpec(array $spec)
+    public function setAmountElementSpec(array $spec) : void
     {
         $this->amountElementSpec = $spec;
-
-        return $this;
     }
 
-    /**
-     * Sets the locale option
-     *
-     * @param  string|null    $locale
-     * @return AbstractLocale
-     */
-    public function setLocale($locale = null)
+    public function setLocale(?string $locale = null) : void
     {
         $this->locale = $locale;
-
-        return $this;
     }
 
-    /**
-     * Returns the locale option
-     *
-     * @return string
-     */
-    public function getLocale()
+    public function getLocale() : string
     {
         if (null === $this->locale) {
             return Locale::getDefault();
@@ -310,30 +296,19 @@ class MoneyFieldset extends Fieldset implements
         return $this->locale;
     }
 
-    /**
-     * Set Default Currency Code
-     * @param  string $code
-     * @return self
-     */
-    public function setDefaultCurrencyCode($code)
+    public function setDefaultCurrencyCode(string $code) : void
     {
-        $this->options['default_currency'] = (string) $code;
-        $this->currencyElementSpec['attributes']['value'] = (string) $code;
-
-        return $this;
+        $this->options['default_currency'] = $code;
+        $this->currencyElementSpec['attributes']['value'] = $code;
     }
 
-    /**
-     * Get Default Currency Code
-     * @return string|NULL
-     */
-    public function getDefaultCurrencyCode()
+    public function getDefaultCurrencyCode() :? string
     {
         if (isset($this->options['default_currency'])) {
             return $this->options['default_currency'];
         }
 
-        return NULL;
+        return null;
     }
 
     /**
@@ -342,7 +317,7 @@ class MoneyFieldset extends Fieldset implements
      * @param bool $inclusive
      * @param string $message
      */
-    public function setMinimumAmount($min, $inclusive = false, $message = null)
+    public function setMinimumAmount($min, bool $inclusive = false, ?string $message = null) : void
     {
         $this->minimumOptions = [
             'min' => $min,
@@ -357,7 +332,7 @@ class MoneyFieldset extends Fieldset implements
      * @param bool $inclusive
      * @param string $message
      */
-    public function setMaximumAmount($max, $inclusive = false, $message = null)
+    public function setMaximumAmount($max, bool $inclusive = false, ?string $message = null) : void
     {
         $this->maximumOptions = [
             'max' => $max,
@@ -365,5 +340,4 @@ class MoneyFieldset extends Fieldset implements
             'message' => $message,
         ];
     }
-
 }

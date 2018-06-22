@@ -1,29 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-//use Zend\Form\FormElementManager;
-
+use NetglueMoney\Service\CurrencyList;
 use NetglueMoney\Validator\CurrencyCode;
+use Psr\Container\ContainerInterface;
 
-class CurrencyCodeValidatorFactory implements FactoryInterface
+class CurrencyCodeValidatorFactory
 {
-    /**
-     *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @return
-     */
-    public function createService(ServiceLocatorInterface $validatorManager)
+    public function __invoke(ContainerInterface $container, $name = null, $options = null)
     {
-        $serviceLocator = $validatorManager->getServiceLocator();
-        $list = $serviceLocator->get('NetglueMoney\Service\CurrencyList');
-        $validator = new CurrencyCode;
-        $validator->setCurrencyList($list);
-
-        return $validator;
+        $list = $container->get(CurrencyList::class);
+        return new CurrencyCode($list, $options);
     }
-
 }

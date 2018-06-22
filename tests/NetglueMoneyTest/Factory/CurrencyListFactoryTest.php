@@ -1,32 +1,36 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\Factory;
+namespace NetglueMoneyTest\Factory;
 
-use Zend\ServiceManager\ServiceManager;
+use NetglueMoney\Factory\CurrencyListFactory;
+use NetglueMoney\Service\CurrencyList;
+use Psr\Container\ContainerInterface;
+use NetglueMoneyTest\Framework\TestCase;
 
-class CurrencyListFactoryTest extends \PHPUnit_Framework_TestCase
+class CurrencyListFactoryTest extends TestCase
 {
 
     public function testCanBeRegisteredAsFactory()
     {
-        $sm = new ServiceManager;
-        $sm->setService('config', array(
-            'ng_money' => array(
-                'allowCurrencies' => array(
+        $container = $this->prophesize(ContainerInterface::class);
+        $container->get('config')->willReturn([
+            'ng_money' => [
+                'allowCurrencies' => [
                     'GBP', 'USD',
-                ),
-                'excludeCurrencies' => array(
+                ],
+                'excludeCurrencies' => [
                     'USD',
-                ),
-            ),
-        ));
-        $sm->setFactory('currencyList', new CurrencyListFactory);
-        $service = $sm->get('currencyList');
-        $this->assertInstanceOf('NetglueMoney\Service\CurrencyList', $service);
+                ],
+            ],
+        ]);
+        $factory = new CurrencyListFactory();
+        /** @var CurrencyList $list */
+        $list = ($factory)($container->reveal());
+        $this->assertInstanceOf(CurrencyList::class, $list);
 
-        $this->assertTrue($service->isAllowed('GBP'));
-        $this->assertFalse($service->isAllowed('USD'));
-        $this->assertFalse($service->isAllowed('ZAR'));
+        $this->assertTrue($list->isAllowed('GBP'));
+        $this->assertFalse($list->isAllowed('USD'));
+        $this->assertFalse($list->isAllowed('ZAR'));
     }
-
 }

@@ -45,8 +45,9 @@ namespace NetglueMoneyTest\Money;
 use NetglueMoney\Money\IntlFormatter;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
+use NetglueMoneyTest\Framework\TestCase;
 
-class IntlFormatterTest extends \PHPUnit_Framework_TestCase
+class IntlFormatterTest extends TestCase
 {
     /**
      * @covers \NetglueMoney\Money\IntlFormatter::__construct

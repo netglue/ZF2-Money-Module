@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\Validator;
 
@@ -39,11 +40,17 @@ class CurrencyCode extends AbstractValidator
      * Error Message Templates
      * @var array
      */
-    protected $messageTemplates = array(
+    protected $messageTemplates = [
         self::INVALID => "Invalid type given. String expected",
         self::NOT_MATCH => "Invalid currency code value. 3 uppercase letters expected",
         self::NOT_FOUND => "The currency code provided does not match any known or allowed currency codes",
-    );
+    ];
+
+    public function __construct(CurrencyList $list, $options = null)
+    {
+        parent::__construct($options);
+        $this->currencyList = $list;
+    }
 
     /**
      * Whether the value is valid
@@ -52,52 +59,23 @@ class CurrencyCode extends AbstractValidator
      */
     public function isValid($value)
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             $this->error(self::INVALID);
-
             return false;
         }
 
         $this->setValue($value);
 
-        if (!preg_match(self::PATTERN, $value)) {
+        if (! preg_match(self::PATTERN, $value)) {
             $this->error(self::NOT_MATCH);
-
             return false;
         }
 
-        if (!$this->getCurrencyList()->isAllowed($value)) {
+        if (! $this->currencyList->isAllowed($value)) {
             $this->error(self::NOT_FOUND);
+            return false;
         }
 
-        return count($this->getMessages()) === 0;
+        return true;
     }
-
-    /**
-     * Set Currency list to check allowed currencies against
-     * @param  CurrencyList $list
-     * @return self
-     */
-    public function setCurrencyList(CurrencyList $list)
-    {
-        $this->currencyList = $list;
-
-        return $this;
-    }
-
-    /**
-     * Return the currency list for checking allowed currencies
-     *
-     * Lazy loads one if none set
-     * @return CurrencyList
-     */
-    public function getCurrencyList()
-    {
-        if (!$this->currencyList) {
-            $this->setCurrencyList(new CurrencyList);
-        }
-
-        return $this->currencyList;
-    }
-
 }

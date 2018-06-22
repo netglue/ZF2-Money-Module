@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\Form\Element;
 
+use NetglueMoney\Exception\ExceptionInterface;
 use Zend\Form\Element\Select;
 use NetglueMoney\Money\Currency;
 use Zend\InputFilter\InputProviderInterface;
@@ -9,6 +11,7 @@ use Zend\Validator\ValidatorInterface;
 use NetglueMoney\Validator\CurrencyCode as CurrencyValidator;
 use NetglueMoney\Service\CurrencyList;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Filter;
 
 class SelectCurrency extends Select implements InputProviderInterface
 {
@@ -23,9 +26,9 @@ class SelectCurrency extends Select implements InputProviderInterface
      * Default Options
      * @var array
      */
-    protected $options = array(
+    protected $options = [
         'displayNames' => false,
-    );
+    ];
 
     /**
      * User defined or default validator
@@ -33,16 +36,24 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     protected $validator;
 
+    public function __construct(
+        CurrencyList $currencyList,
+        $name = null,
+        $options = []
+    ) {
+        $this->currencyList = $currencyList;
+        parent::__construct($name, $options);
+    }
+
     /**
      * @return array
      */
     public function getValueOptions()
     {
-        if (!count($this->valueOptions)) {
+        if (! count($this->valueOptions)) {
             $names = Currency::getAvailableCurrencyNames();
-            $codes = $this->getCurrencyList()->getAllow();
             $options = parent::getValueOptions();
-            foreach ($codes as $code) {
+            foreach ($this->currencyList->getAllow() as $code) {
                 $name = $this->getDisplayNames() ? $names[$code] : $code;
                 $options[$code] = $name;
             }
@@ -58,17 +69,19 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function getInputSpecification()
     {
-        return array(
+        return [
             'name' => $this->getName(),
             'required' => true,
-            'filters' => array(
-                array('name' => 'Zend\Filter\StringTrim'),
-                array('name' => 'Zend\Filter\StringToUpper'),
-            ),
-            'validators' => array(
-                $this->getValidator(),
-            ),
-        );
+            'filters' => [
+                ['name' => Filter\StringTrim::class],
+                ['name' => Filter\StringToUpper::class],
+            ],
+            'validators' => [
+                [
+                    'name' => CurrencyValidator::class,
+                ]
+            ],
+        ];
     }
 
     /**
@@ -82,12 +95,12 @@ class SelectCurrency extends Select implements InputProviderInterface
             if ($value instanceof \Traversable) {
                 $value = ArrayUtils::iteratorToArray($value);
             } elseif ($value == null) {
-                return parent::setValue(array());
-            } elseif (!is_array($value)) {
+                return parent::setValue([]);
+            } elseif (! is_array($value)) {
                 $value = (array) $value;
             }
 
-            return parent::setValue(array_map(array($this, 'makeCurrency'), $value));
+            return parent::setValue(array_map([$this, 'makeCurrency'], $value));
         }
 
         return parent::setValue($this->makeCurrency($value));
@@ -95,93 +108,39 @@ class SelectCurrency extends Select implements InputProviderInterface
 
     /**
      * Make a currency object with the given code or return null if the code is empty/invalid
-     * @param  string        $value
-     * @return Currency|NULL
+     *
+     * @param $code
+     * @return Currency|null
      */
-    public function makeCurrency($code)
+    public function makeCurrency($code) :? Currency
     {
         if (is_string($code)) {
             try {
                 return new Currency($code);
-            } catch (\NetglueMoney\Exception\ExceptionInterface $e) {
-
+            } catch (ExceptionInterface $e) {
             }
         }
 
-        return NULL;
+        return null;
     }
 
     /**
      * Set Option whether to display names or codes
+     *
      * @param  bool $flag
-     * @return self
+     * @return void
      */
-    public function setDisplayNames($flag)
+    public function setDisplayNames(bool $flag) : void
     {
         $this->setOption('displayNames', (bool) $flag);
-
-        return $this;
     }
 
     /**
      * Return display names option
      * @return bool
      */
-    public function getDisplayNames()
+    public function getDisplayNames() : bool
     {
-        return $this->getOption('displayNames');
+        return (bool) $this->getOption('displayNames');
     }
-
-    /**
-     * Set validator to return with input spec
-     * @param  ValidatorInterface $validator
-     * @return self
-     */
-    public function setValidator(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-
-        return $this;
-    }
-
-    /**
-     * Return a default validator if noneset
-     * @return ValidatorInterface
-     */
-    public function getValidator()
-    {
-        if (NULL === $this->validator) {
-            $this->validator = new CurrencyValidator;
-        }
-
-        return $this->validator;
-    }
-
-    /**
-     * Set Currency list to check allowed currencies against
-     * @param  CurrencyList $list
-     * @return self
-     */
-    public function setCurrencyList(CurrencyList $list)
-    {
-        $this->currencyList = $list;
-
-        return $this;
-    }
-
-    /**
-     * Return the currency list for checking allowed currencies
-     *
-     * Lazy loads one if none set
-     * @return CurrencyList
-     */
-    public function getCurrencyList()
-    {
-        if (!$this->currencyList) {
-            $this->setCurrencyList(new CurrencyList);
-        }
-
-        return $this->currencyList;
-    }
-
 }

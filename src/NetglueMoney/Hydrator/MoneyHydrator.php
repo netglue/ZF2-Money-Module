@@ -1,7 +1,7 @@
 <?php
 namespace NetglueMoney\Hydrator;
 
-use Zend\Stdlib\Hydrator\HydratorInterface;
+use Zend\Hydrator\HydratorInterface;
 
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
@@ -18,7 +18,7 @@ class MoneyHydrator implements HydratorInterface
      */
     public function extract($object)
     {
-        if (!$object instanceof Money) {
+        if (! $object instanceof Money) {
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects a Money instance',
                 __METHOD__
@@ -27,10 +27,10 @@ class MoneyHydrator implements HydratorInterface
         $subUnit = $object->getCurrency()->getSubUnit();
         $amount = (float) ($object->getAmount() / $subUnit);
 
-        return array(
+        return [
             'amount' => $amount,
             'currency' => $object->getCurrencyCode(),
-        );
+        ];
     }
 
     /**
@@ -51,5 +51,4 @@ class MoneyHydrator implements HydratorInterface
 
         return $object;
     }
-
 }

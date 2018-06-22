@@ -4,8 +4,9 @@ namespace NetglueMoney\Hydrator;
 
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
+use NetglueMoneyTest\Framework\TestCase;
 
-class MoneyHydratorTest extends \PHPUnit_Framework_TestCase
+class MoneyHydratorTest extends TestCase
 {
 
     public function testExtract()
@@ -15,10 +16,10 @@ class MoneyHydratorTest extends \PHPUnit_Framework_TestCase
         $data = $hydrator->extract($money);
 
         $this->assertInternalType('array', $data);
-        $this->assertSame(array(
+        $this->assertSame([
             'amount' => 1.0,
             'currency' => 'GBP',
-        ), $data);
+        ], $data);
     }
 
     /**
@@ -35,10 +36,10 @@ class MoneyHydratorTest extends \PHPUnit_Framework_TestCase
         $money = new Money(100, new Currency('GBP'));
         $hydrator = new MoneyHydrator;
 
-        $data = array(
+        $data = [
             'amount' => 100,
             'currency' => 'GBP',
-        );
+        ];
 
         /**
          * Money object is immutable so we can only use the returned

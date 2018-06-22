@@ -1,23 +1,17 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney\Factory;
 
-use Zend\ServiceManager\FactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 use NetglueMoney\Service\CurrencyList;
+use Psr\Container\ContainerInterface;
 
-class CurrencyListFactory implements FactoryInterface
+class CurrencyListFactory
 {
-    /**
-     * Return Currency List Instance
-     * @param  ServiceLocatorInterface $serviceLocator
-     * @return CurrencyList
-     */
-    public function createService(ServiceLocatorInterface $serviceLocator)
+    public function __invoke(ContainerInterface $container) : CurrencyList
     {
-        $config = $serviceLocator->get('config');
-        $config = isset($config['ng_money']) ? $config['ng_money'] : array();
+        $config = $container->get('config');
+        $config = isset($config['ng_money']) ? $config['ng_money'] : [];
         $list = new CurrencyList;
 
         if (isset($config['allowCurrencies']) && is_array($config['allowCurrencies'])) {
@@ -29,5 +23,4 @@ class CurrencyListFactory implements FactoryInterface
 
         return $list;
     }
-
 }

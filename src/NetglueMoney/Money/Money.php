@@ -41,6 +41,7 @@
  * @link       http://www.github.com/sebastianbergmann/money
  */
 namespace NetglueMoney\Money;
+
 use NetglueMoney\Exception;
 
 /**
@@ -70,12 +71,12 @@ class Money
     /**
      * @var integer[]
      */
-    private static $roundingModes = array(
+    private static $roundingModes = [
         PHP_ROUND_HALF_UP,
         PHP_ROUND_HALF_DOWN,
         PHP_ROUND_HALF_EVEN,
         PHP_ROUND_HALF_ODD
-    );
+    ];
 
     /**
      * @param  integer                             $amount
@@ -84,7 +85,7 @@ class Money
      */
     public function __construct($amount, $currency)
     {
-        if (!is_int($amount)) {
+        if (! is_int($amount)) {
             throw new Exception\InvalidArgumentException('$amount must be an integer');
         }
 
@@ -109,7 +110,7 @@ class Money
      */
     public static function fromString($value, $currency)
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             throw new Exception\InvalidArgumentException('$value must be a string');
         }
 
@@ -226,7 +227,7 @@ class Money
      */
     public function multiply($factor, $roundingMode = PHP_ROUND_HALF_UP)
     {
-        if (!in_array($roundingMode, self::$roundingModes)) {
+        if (! in_array($roundingMode, self::$roundingModes)) {
             throw new Exception\InvalidArgumentException(
                 '$roundingMode must be a valid rounding mode (PHP_ROUND_*)'
             );
@@ -249,14 +250,14 @@ class Money
      */
     public function allocateToTargets($n)
     {
-        if (!is_int($n)) {
+        if (! is_int($n)) {
             throw new Exception\InvalidArgumentException('$n must be an integer');
         }
 
         $low       = $this->newMoney(intval($this->amount / $n));
         $high      = $this->newMoney($low->getAmount() + 1);
         $remainder = $this->amount % $n;
-        $result    = array();
+        $result    = [];
 
         for ($i = 0; $i < $remainder; $i++) {
             $result[] = $high;
@@ -279,7 +280,7 @@ class Money
     public function allocateByRatios(array $ratios)
     {
         /** @var \NetglueMoney\Money\Money[] $result */
-        $result    = array();
+        $result    = [];
         $total     = array_sum($ratios);
         $remainder = $this->amount;
 
@@ -320,10 +321,10 @@ class Money
             )
         );
 
-        return array(
+        return [
             'percentage' => $percentage,
             'subtotal'   => $this->subtract($percentage)
-        );
+        ];
     }
 
     /**
@@ -433,7 +434,7 @@ class Money
      */
     private function assertIsInteger($amount)
     {
-        if (!is_int($amount)) {
+        if (! is_int($amount)) {
             throw new Exception\OverflowException;
         }
     }// @codeCoverageIgnore
@@ -482,7 +483,7 @@ class Money
      */
     private static function handleCurrencyArgument($currency)
     {
-        if (!$currency instanceof Currency && !is_string($currency)) {
+        if (! $currency instanceof Currency && ! is_string($currency)) {
             throw new Exception\InvalidArgumentException('$currency must be an object of type Currency or a string');
         }
 

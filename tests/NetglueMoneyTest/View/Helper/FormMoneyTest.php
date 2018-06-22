@@ -1,10 +1,15 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\View\Helper;
+namespace NetglueMoneyTest\View\Helper;
+
 use Locale;
+use NetglueMoney\View\Helper\FormMoney;
 use NumberFormatter;
 use Zend\Form\Element;
-class FormMoneyTest extends \PHPUnit_Framework_TestCase
+use NetglueMoneyTest\Framework\TestCase;
+
+class FormMoneyTest extends TestCase
 {
 
     public function setUp()
@@ -13,26 +18,16 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
         setlocale(LC_ALL, 'en_US');
     }
 
-    public function testCanInstantiate()
+    public function testGetLocaleReturnsDefault()
     {
-        $helper = new FormMoney;
-        return $helper;
-    }
-
-    /**
-     * @depends testCanInstantiate
-     */
-    public function testGetLocaleReturnsDefault(FormMoney $helper)
-    {
+        $helper = new FormMoney();
         $default = Locale::getDefault();
         $this->assertSame($default, $helper->getLocale());
     }
 
-    /**
-     * @depends testCanInstantiate
-     */
-    public function testSetGetLocale(FormMoney $helper)
+    public function testSetGetLocale()
     {
+        $helper = new FormMoney();
         $helper->setLocale('en_GB');
         $this->assertSame('en_GB', $helper->getLocale());
 
@@ -40,11 +35,9 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('en_US', $helper->getLocale());
     }
 
-    /**
-     * @depends testCanInstantiate
-     */
-    public function testCanNullifyLocale(FormMoney $helper)
+    public function testCanNullifyLocale()
     {
+        $helper = new FormMoney();
         $default = Locale::getDefault();
 
         $helper->setLocale('test');
@@ -55,11 +48,15 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
     public function testGetFormatter()
     {
         $helper = new FormMoney;
-        $gb = $helper->getFormatter('en_GB');
-        $this->assertInstanceOf('NumberFormatter', $gb);
-        $this->assertSame($gb, $helper->getFormatter('en_GB'));
+        $gbFormatter = $helper->getFormatter('en_GB');
+        $this->assertInstanceOf(NumberFormatter::class, $gbFormatter);
+        $this->assertSame($gbFormatter, $helper->getFormatter('en_GB'));
 
-        $this->assertSame('en_GB', $gb->getLocale(), 'Expected number formatter to have the locale en_GB');
+        $this->assertSame(
+            'en_GB',
+            $gbFormatter->getLocale(Locale::VALID_LOCALE),
+            'Expected number formatter to have the locale en_GB'
+        );
 
         $fr = $helper->getFormatter('fr-FR');
         $this->assertSame('fr_FR', $fr->getLocale(Locale::VALID_LOCALE));
@@ -90,20 +87,18 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testCanInstantiate
+     * @expectedException \Zend\Form\Exception\DomainException
      */
-    public function testRaisesExceptionWhenNameIsNotPresentInElement(FormMoney $helper)
+    public function testRaisesExceptionWhenNameIsNotPresentInElement()
     {
+        $helper = new FormMoney;
         $element = new Element();
-        $this->setExpectedException('Zend\Form\Exception\DomainException', 'name');
         $helper->render($element);
     }
 
-    /**
-     * @depends testCanInstantiate
-     */
-    public function testRenderHasFormattedValueAttribute(FormMoney $helper)
+    public function testRenderHasFormattedValueAttribute()
     {
+        $helper = new FormMoney;
         $element = new Element('foo');
         $element->setValue(1234.56);
         $helper->setLocale('de_DE');
@@ -112,5 +107,4 @@ class FormMoneyTest extends \PHPUnit_Framework_TestCase
         $pos = strpos($markup, $expect);
         $this->assertGreaterThan(1, $pos);
     }
-
 }

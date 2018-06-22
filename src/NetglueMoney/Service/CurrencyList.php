@@ -25,17 +25,19 @@ class CurrencyList
 
     /**
      * Constructor populates allowed codes with defaults and optionally filters those passed as an argument
+     *
      * @param  array|NULL $allow An array of currency codes to allow
-     * @param  array|NULL $deny  An array of currency codes to remove from the allowed list, or remove from the defaults if no allow is set
+     * @param  array|NULL $deny  An array of currency codes to remove from the allowed list,
+     *                           or remove from the defaults if no allow is set
      * @return void
      */
-    public function __construct($allow = NULL, $deny = NULL)
+    public function __construct(?array $allow = null, ?array $deny = null)
     {
         $this->defaults = Currency::getAvailableCurrencies();
-        if (NULL !== $allow) {
+        if (null !== $allow) {
             $this->setAllow($allow);
         }
-        if (NULL !== $deny) {
+        if (null !== $deny) {
             $this->remove($deny);
         }
     }
@@ -47,7 +49,7 @@ class CurrencyList
      */
     public function setAllow(array $allow)
     {
-        $this->allow = NULL;
+        $this->allow = null;
         foreach ($allow as $code) {
             $this->add($code);
         }
@@ -70,7 +72,7 @@ class CurrencyList
      */
     public function getAllow()
     {
-        if (NULL !== $this->allow) {
+        if (null !== $this->allow) {
             return $this->allow;
         }
 
@@ -95,8 +97,8 @@ class CurrencyList
     public function add($code)
     {
         $code = $this->assertValidCode($code);
-        if (!is_array($this->allow)) {
-            $this->allow = array();
+        if (! is_array($this->allow)) {
+            $this->allow = [];
         }
         $this->allow[] = $code;
 
@@ -117,7 +119,7 @@ class CurrencyList
 
             return $this;
         }
-        if (!is_array($this->allow)) {
+        if (! is_array($this->allow)) {
             $this->allow = $this->defaults;
         }
         $code = $this->assertValidCode($code);
@@ -144,14 +146,14 @@ class CurrencyList
         if ($code instanceof Currency) {
             return (string) $code;
         }
-        if (!is_string($code)) {
+        if (! is_string($code)) {
             throw new Exception\InvalidArgumentException(sprintf(
-                'Currency code should be a string. Recieved %s',
+                'Currency code should be a string. Received %s',
                 gettype($code)
             ));
         }
         $code = trim(strtoupper($code));
-        if (!in_array($code, $this->defaults, true)) {
+        if (! in_array($code, $this->defaults, true)) {
             throw new Exception\InvalidCurrencyCodeException(sprintf(
                 '%s is not a valid ISO 4217 Currency code',
                 $code
@@ -160,5 +162,4 @@ class CurrencyList
 
         return $code;
     }
-
 }

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Most of this was copied from
  * \Zend\I18n\View\Helper\CurrencyFormat but re-implemented because strict standards
@@ -7,45 +9,34 @@
 
 namespace NetglueMoney\View\Helper;
 
-
 use Locale;
 use NumberFormatter;
-use NetglueMoney\I18n\LocaleAwareInterface;
 use NetglueMoney\Exception;
 use Zend\View\Helper\AbstractHelper;
 use NetglueMoney\Money\Money;
-use NetglueMoney\Money\Currency;
 
-
-class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
+class MoneyFormat extends AbstractHelper
 {
 
     /**
      * Locale String
      * @var string|NULL
      */
-    protected $locale;
-
-    /**
-     * Formatter instances
-     *
-     * @var array
-     */
-    protected $formatters = array();
+    private $locale;
 
     /**
      * Currency pattern
      *
      * @var string
      */
-    protected $currencyPattern;
+    private $currencyPattern;
 
     /**
      * If set to true, the currency will be returned with two decimals
      *
      * @var bool
      */
-    protected $showDecimals = true;
+    private $showDecimals = true;
 
     /**
      * @throws Exception\ExtensionNotLoadedException if ext/intl is not present
@@ -53,7 +44,7 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      */
     public function __construct()
     {
-        if (!extension_loaded('intl')) {
+        if (! extension_loaded('intl')) {
             throw new Exception\ExtensionNotLoadedException(sprintf(
                 '%s component requires the intl PHP extension',
                 __NAMESPACE__
@@ -73,9 +64,9 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      */
     public function __invoke(
         Money $money,
-        $locale       = null,
-        $showDecimals = null,
-        $pattern      = null
+        ?string $locale = null,
+        ?bool $showDecimals = null,
+        ?string $pattern = null
     ) {
 
         if (null === $locale) {
@@ -100,22 +91,24 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      * @param  string $pattern
      * @return string
      */
-    protected function formatCurrency(
+    private function formatCurrency(
         Money $money,
-        $locale,
-        $showDecimals,
-        $pattern
-    ) {
-        $formatter = $this->getFormatter($locale);
+        string $locale,
+        bool $showDecimals,
+        ?string $pattern = null
+    ) : string {
 
-        // Should we look up the default pattern and restore it after we're done formatting?
-        if ($pattern !== null) {
+        $formatter = new NumberFormatter(
+            $locale,
+            NumberFormatter::CURRENCY
+        );
+        if ($pattern) {
             $formatter->setPattern($pattern);
         }
 
         $currency = $money->getCurrency();
-        $amount = $money->getAmount() / $currency->getSubUnit();
-        $code = $currency->getCurrencyCode();
+        $amount   = $money->getAmount() / $currency->getSubUnit();
+        $code     = $currency->getCurrencyCode();
 
         $formatter->setTextAttribute(NumberFormatter::CURRENCY_CODE, $code);
 
@@ -127,26 +120,6 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
         }
 
         return $formatter->formatCurrency($amount, $code);
-    }
-
-    /**
-     * Return the formatter for the given locale string
-     * @param string $locale
-     * @return NumberFormatter
-     */
-    public function getFormatter($locale = null)
-    {
-        if (null === $locale) {
-            $locale = $this->getLocale();
-        }
-        $formatterId = md5(strtolower($locale));
-        if (!isset($this->formatters[$formatterId])) {
-            $this->formatters[$formatterId] = new NumberFormatter(
-                $locale,
-                NumberFormatter::CURRENCY
-            );
-        }
-        return $this->formatters[$formatterId];
     }
 
     /**
@@ -180,7 +153,7 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      * @param  string $currencyPattern
      * @return CurrencyFormat
      */
-    public function setCurrencyPattern($currencyPattern)
+    public function setCurrencyPattern(string $currencyPattern) : self
     {
         $this->currencyPattern = $currencyPattern;
         return $this;
@@ -191,7 +164,7 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      *
      * @return string
      */
-    public function getCurrencyPattern()
+    public function getCurrencyPattern() :? string
     {
         return $this->currencyPattern;
     }
@@ -202,9 +175,9 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
      * @param  bool $showDecimals
      * @return CurrencyFormat
      */
-    public function setShouldShowDecimals($showDecimals)
+    public function setShouldShowDecimals(bool $showDecimals) : self
     {
-        $this->showDecimals = (bool) $showDecimals;
+        $this->showDecimals = $showDecimals;
         return $this;
     }
 
@@ -217,5 +190,4 @@ class MoneyFormat extends AbstractHelper implements LocaleAwareInterface
     {
         return $this->showDecimals;
     }
-
 }
