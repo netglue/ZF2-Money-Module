@@ -5,16 +5,16 @@ namespace NetglueMoneyTest\Form;
 
 use Locale;
 use NetglueMoney\Form\MoneyFieldset;
-use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
+use NetglueMoney\Money\Money;
 use NetglueMoneyTest\Framework\TestCase;
 use Zend\Form\ElementInterface;
-use Zend\Hydrator\ClassMethods;
+use Zend\Form\Form;
 
 class MoneyFieldsetTest extends TestCase
 {
 
-    public function testIntitalDefaults()
+    public function testInitialDefaults()
     {
         $fieldset = new MoneyFieldset();
         $fieldset->init();
@@ -48,36 +48,6 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame($spec, $fieldset->getCurrencyElementSpec());
         $fieldset->setAmountElementSpec($spec);
         $this->assertSame($spec, $fieldset->getAmountElementSpec());
-    }
-
-    public function testBindingWorksAsExpected()
-    {
-        return $this->markTestSkipped('Skipping binding test as the entire dependency graph will need to be built');
-
-        $form = new \Zend\Form\Form;
-        $form->setHydrator(new ClassMethods);
-
-        $fieldset = new MoneyFieldset;
-        $fieldset->init();
-        $form->add($fieldset, ['name' => 'money']);
-
-        $model = new TestModel;
-        $form->bind($model);
-        $this->assertEquals(5432.1, $fieldset->get('amount')->getValue());
-        $this->assertEquals('ZAR', $fieldset->get('currency')->getValue());
-
-        $form->setData([
-            'money' => [
-                'amount' => 1234.56,
-                'currency' => 'GBP',
-            ],
-        ]);
-        $this->assertTrue($form->isValid());
-        $bound = $form->getData();
-        $this->assertInstanceOf('NetglueMoney\Form\TestModel', $bound);
-        $this->assertInstanceOf('NetglueMoney\Money\Money', $bound->money);
-        $this->assertSame(123456, $bound->money->getAmount());
-        $this->assertSame('GBP', $bound->money->getCurrencyCode());
     }
 
     public function testSetMoneySetsBoundObject()
@@ -120,35 +90,46 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame(100, $spec['amount']['validators'][2]['options']['max']);
         $this->assertTrue($spec['amount']['validators'][2]['options']['inclusive']);
     }
-}
 
-class TestModel
-{
-    /**
-     * @var Money
-     */
-    public $money;
-
-    public function setMoney(Money $money = null)
+    public function testDefaultCurrencySettingWillInitialiseCurrencyElementWithValue()
     {
-        $this->money = $money;
-
-        return $this;
+        $fieldset = new MoneyFieldset('someName', ['default_currency' => 'USD']);
+        $fieldset->init();
+        $this->assertSame('USD', $fieldset->getCurrencyElement()->getValue());
     }
 
-    public function getMoney()
+    public function testSettingRequiredFlagOnFieldsetAppliesToElements()
     {
-        if (! $this->money) {
-            $this->money = new Money(543210, new Currency('ZAR'));
-        }
-
-        return $this->money;
-    }
-
-    public function getArrayCopy()
-    {
-        return [
-            'money' => $this->money,
+        $formSpec = [
+            'fieldsets' => [
+                'money' => [
+                    'spec' => [
+                        'name' => 'money',
+                        'type' => MoneyFieldset::class,
+                        'attributes' => [
+                            'required' => false,
+                        ],
+                    ],
+                ],
+            ],
         ];
+        $postValues = [
+            'money' => [
+                'currency' => null,
+                'amount' => null,
+            ],
+        ];
+        $factory = $this->getFormFactory();
+        $form = $factory->createForm($formSpec);
+
+        $fieldset = $form->get('money');
+        $this->assertInstanceOf(MoneyFieldset::class, $fieldset);
+        $form->setData($postValues);
+        $this->assertTrue($form->isValid());
+
+        $formSpec['fieldsets']['money']['spec']['attributes']['required'] = true;
+        $form = $factory->createForm($formSpec);
+        $form->setData($postValues);
+        $this->assertFalse($form->isValid());
     }
 }

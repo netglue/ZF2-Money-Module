@@ -4,22 +4,20 @@ declare(strict_types=1);
 namespace NetglueMoney\Form;
 
 use Locale;
+use NetglueMoney\Hydrator\MoneyHydrator;
+use NetglueMoney\Money\Money;
 use NetglueMoney\Validator\CurrencyCode;
 use NumberFormatter;
 use Zend\Filter\StringToUpper;
 use Zend\Filter\StringTrim;
+use Zend\Form\Element as ZendElement;
 use Zend\Form\ElementInterface;
 use Zend\Form\Fieldset;
 use Zend\I18n\Filter\NumberParse;
 use Zend\I18n\Validator\IsFloat;
 use Zend\InputFilter\InputFilterProviderInterface;
-use NetglueMoney\Hydrator\MoneyHydrator;
-use NetglueMoney\Money\Money;
-use NetglueMoney\Money\Currency;
-
 use Zend\Validator\GreaterThan;
 use Zend\Validator\LessThan;
-use Zend\Form\Element as ZendElement;
 
 class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
 {
@@ -113,7 +111,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Adds the required elements if they do not already exist
      * @return void
      */
-    protected function initialiseElements()
+    private function initialiseElements()
     {
         if (! $this->has('currency')) {
             $this->add($this->getCurrencyElementSpec());

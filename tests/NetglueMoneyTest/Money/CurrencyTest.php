@@ -48,14 +48,6 @@ use NetglueMoneyTest\Framework\TestCase;
 
 class CurrencyTest extends TestCase
 {
-    /**
-     * @covers            \NetglueMoney\Money\Currency::__construct
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
-     */
-    public function testExceptionIsRaisedForInvalidConstructorArgument()
-    {
-        new Currency(null);
-    }
 
     /**
      * @covers \NetglueMoney\Money\Currency::__construct

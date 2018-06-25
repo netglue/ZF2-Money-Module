@@ -4,17 +4,13 @@ declare(strict_types=1);
 namespace NetglueMoney;
 
 use NetglueMoney\Exception;
-
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\FormElementProviderInterface;
+use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ValidatorProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
 use Zend\ServiceManager\Factory\InvokableFactory;
 
-/**
- * @codeCoverageIgnore
- */
 class Module implements
     ServiceProviderInterface,
     FormElementProviderInterface,
@@ -25,6 +21,7 @@ class Module implements
 
     /**
      * @throws Exception\ExtensionNotLoadedException if ext/intl is not present
+     * @codeCoverageIgnore
      */
     public function __construct()
     {

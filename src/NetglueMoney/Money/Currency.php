@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Money
  *
@@ -1166,12 +1168,12 @@ class Currency
      * Return an array of available currency codes
      * @return array
      */
-    public static function getAvailableCurrencies()
+    public static function getAvailableCurrencies() : array
     {
         return array_keys(self::$currencies);
     }
 
-    public static function getAvailableCurrencyNames()
+    public static function getAvailableCurrencyNames() : array
     {
         $names = [];
         foreach (self::$currencies as $code => $info) {
@@ -1185,7 +1187,7 @@ class Currency
      * @param  string $currencyCode
      * @throws \NetglueMoney\Exception\InvalidArgumentException
      */
-    public function __construct($currencyCode)
+    public function __construct(string $currencyCode)
     {
         if (! isset(self::$currencies[$currencyCode])) {
             throw new Exception\InvalidArgumentException(
@@ -1203,8 +1205,13 @@ class Currency
      * @param integer $defaultFractionDigits
      * @param integer $subUnit
      */
-    public static function addCurrency($code, $displayName, $numericCode, $defaultFractionDigits, $subUnit)
-    {
+    public static function addCurrency(
+        string $code,
+        string $displayName,
+        int $numericCode,
+        int $defaultFractionDigits,
+        int $subUnit
+    ) {
         self::$currencies[$code] = [
             'display_name' => $displayName,
             'numeric_code' => $numericCode,
@@ -1218,7 +1225,7 @@ class Currency
      *
      * @return string
      */
-    public function getCurrencyCode()
+    public function getCurrencyCode() : string
     {
         return $this->currencyCode;
     }
@@ -1229,7 +1236,7 @@ class Currency
      *
      * @return integer
      */
-    public function getDefaultFractionDigits()
+    public function getDefaultFractionDigits() :int
     {
         return self::$currencies[$this->currencyCode]['default_fraction_digits'];
     }
@@ -1239,7 +1246,7 @@ class Currency
      *
      * @return string
      */
-    public function getDisplayName()
+    public function getDisplayName() : string
     {
         return self::$currencies[$this->currencyCode]['display_name'];
     }
@@ -1249,7 +1256,7 @@ class Currency
      *
      * @return integer
      */
-    public function getNumericCode()
+    public function getNumericCode() : int
     {
         return self::$currencies[$this->currencyCode]['numeric_code'];
     }
@@ -1259,7 +1266,7 @@ class Currency
      *
      * @return integer
      */
-    public function getSubUnit()
+    public function getSubUnit() : int
     {
         return self::$currencies[$this->currencyCode]['sub_unit'];
     }
@@ -1269,7 +1276,7 @@ class Currency
      *
      * @return string
      */
-    public function __toString()
+    public function __toString() : string
     {
         return $this->currencyCode;
     }

@@ -107,10 +107,6 @@ class Money
      */
     public static function fromString(string $value, $currency)
     {
-        if (! is_string($value)) {
-            throw new Exception\InvalidArgumentException('$value must be a string');
-        }
-
         $currency = self::handleCurrencyArgument($currency);
 
         return new static(
@@ -431,7 +427,7 @@ class Money
         if (! is_int($amount)) {
             throw new Exception\OverflowException;
         }
-    }
+    } // @codeCoverageIgnore
 
     /**
      * Raises an exception if the amount is outside of the integer bounds
@@ -445,7 +441,7 @@ class Money
         if (abs($amount) > PHP_INT_MAX) {
             throw new Exception\OverflowException;
         }
-    }
+    } // @codeCoverageIgnore
 
     /**
      * Cast an amount to an integer but ensure that the operation won't hide overflow
