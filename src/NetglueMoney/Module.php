@@ -1,33 +1,16 @@
 <?php
+declare(strict_types=1);
 
 namespace NetglueMoney;
 
 use NetglueMoney\Exception;
 
-/**
- * Config Provider
- */
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
-
-/**
- * Service Provider
- */
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
-
-/**
- * Form Element Provider
- */
 use Zend\ModuleManager\Feature\FormElementProviderInterface;
-
-/**
- * Validator Provider
- */
 use Zend\ModuleManager\Feature\ValidatorProviderInterface;
-
-/**
- * View Helper Provider
- */
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 /**
  * @codeCoverageIgnore
@@ -58,7 +41,7 @@ class Module implements
      * @return array
      * @implements ServiceProviderInterface
      */
-    public function getServiceConfig()
+    public function getServiceConfig() : array
     {
         return [
             'factories' => [
@@ -67,55 +50,41 @@ class Module implements
         ];
     }
 
-    /**
-     * Include/Return module configuration
-     * @return array
-     * @implements ConfigProviderInterface
-     */
-    public function getConfig()
+    public function getConfig() : array
     {
         return include __DIR__ . '/../../config/module.config.php';
     }
 
-    /**
-     * Get Form Element Config
-     * @return array
-     */
-    public function getFormElementConfig()
+    public function getFormElementConfig() : array
     {
         return [
             'factories' => [
-                'NetglueMoney\Form\Element\SelectCurrency' => 'NetglueMoney\Factory\CurrencySelectFactory',
+                Form\Element\SelectCurrency::class => Factory\CurrencySelectFactory::class,
+                Form\MoneyFieldset::class          => InvokableFactory::class,
+                Form\Element\Money::class          => InvokableFactory::class,
+            ],
+        ];
+    }
+
+    public function getValidatorConfig() : array
+    {
+        return [
+            'factories' => [
+                Validator\CurrencyCode::class => Factory\CurrencyCodeValidatorFactory::class,
+            ],
+        ];
+    }
+
+    public function getViewHelperConfig() : array
+    {
+        return [
+            'factories' => [
+                View\Helper\MoneyFormat::class => InvokableFactory::class,
+                View\Helper\FormMoney::class   => InvokableFactory::class,
             ],
             'aliases' => [
-                'SelectCurrency' => 'NetglueMoney\Form\Element\SelectCurrency',
-            ],
-            'invokables' => [
-                'NetglueMoney\Form\MoneyFieldset' => 'NetglueMoney\Form\MoneyFieldset',
-                'NetglueMoney\Form\Element\Money' => 'NetglueMoney\Form\Element\Money',
-            ],
-        ];
-    }
-
-    /**
-     * Get validator config
-     * @return array
-     */
-    public function getValidatorConfig()
-    {
-        return [
-            'factories' => [
-                'NetglueMoney\Validator\CurrencyCode' => 'NetglueMoney\Factory\CurrencyCodeValidatorFactory',
-            ],
-        ];
-    }
-
-    public function getViewHelperConfig()
-    {
-        return [
-            'invokables' => [
-                'moneyFormat' => 'NetglueMoney\View\Helper\MoneyFormat',
-                'formMoney' => 'NetglueMoney\View\Helper\FormMoney',
+                'moneyFormat' => View\Helper\MoneyFormat::class,
+                'formMoney'   => View\Helper\FormMoney::class,
             ],
         ];
     }

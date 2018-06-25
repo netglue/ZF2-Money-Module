@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace NetglueMoney\Hydrator;
+namespace NetglueMoneyTest\Hydrator;
 
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
@@ -23,7 +24,7 @@ class MoneyHydratorTest extends TestCase
     }
 
     /**
-     * @expectedException NetglueMoney\Exception\InvalidArgumentException
+     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
      */
     public function testExtractThrowsException()
     {

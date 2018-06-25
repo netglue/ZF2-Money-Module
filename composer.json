@@ -4,7 +4,7 @@
     "type": "module",
     "license": "MIT",
     "keywords": [
-        "zf2",
+        "zf3",
         "zend",
         "module",
         "netglue",
@@ -20,7 +20,7 @@
         {
             "name": "George Steel",
             "email": "george@net-glue.co.uk",
-            "homepage": "http://netglue.co/"
+            "homepage": "https://netglue.uk/"
         }
     ],
     "require": {
@@ -49,6 +49,11 @@
     "autoload-dev": {
         "psr-4": {
             "NetglueMoneyTest\\": "tests/NetglueMoneyTest"
+        }
+    },
+    "extra": {
+        "zf": {
+            "module": "NetglueMoney"
         }
     }
 }

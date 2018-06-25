@@ -4,7 +4,7 @@
  * in a Bootstrap 2.x style
  */
 
-
+/** @var \NetglueMoney\Form\MoneyFieldset $fieldset */
 $fieldset = $this->fieldset;
 
 $code = $fieldset->get('currency');
@@ -12,17 +12,17 @@ $amount = $fieldset->get('amount');
 
 $isError = count($code->getMessages()) || count($amount->getMessages());
 
-$fieldsetClass = array(
+$fieldsetClass = [
 	'money-fieldset',
 	'control-group',
-);
+];
 if($isError) {
 	$fieldsetClass[] = 'error';
 }
 $fieldsetClass = implode(' ', $fieldsetClass);
 
 
-$this->formElementErrors()->setAttributes(array('class' => 'text-error unstyled'));
+$this->formElementErrors()->setAttributes(['class' => 'text-error unstyled']);
 
 $code->setAttribute('class', 'input-mini currency-code');
 $amount->setAttribute('class', 'input money-amount');
