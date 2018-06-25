@@ -54,7 +54,8 @@
     },
     "extra": {
         "zf": {
-            "module": "NetglueMoney"
+            "module": "NetglueMoney",
+            "config-provider": "NetglueMoney\\ConfigProvider"
         }
     }
 }

@@ -7,8 +7,10 @@ use Locale;
 use NetglueMoney\Form\MoneyFieldset;
 use NetglueMoney\Money\Currency;
 use NetglueMoney\Money\Money;
+use NetglueMoneyTest\Framework\MoneyModel;
 use NetglueMoneyTest\Framework\TestCase;
 use Zend\Form\ElementInterface;
+use Zend\Form\Form;
 
 class MoneyFieldsetTest extends TestCase
 {
@@ -130,5 +132,57 @@ class MoneyFieldsetTest extends TestCase
         $form = $factory->createForm($formSpec);
         $form->setData($postValues);
         $this->assertFalse($form->isValid());
+    }
+
+    public function testBinding()
+    {
+        $formSpec = [
+            'fieldsets' => [
+                'money' => [
+                    'spec' => [
+                        'name' => 'money',
+                        'type' => MoneyFieldset::class,
+                        'attributes' => [
+                            'required' => true,
+                        ],
+                    ],
+                ],
+                'optionalMoney' => [
+                    'spec' => [
+                        'name' => 'optionalMoney',
+                        'type' => MoneyFieldset::class,
+                        'attributes' => [
+                            'required' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $factory = $this->getFormFactory();
+        /** @var Form $form */
+        $form = $factory->createForm($formSpec);
+        $form->setHydrator(new \Zend\Hydrator\ClassMethods);
+        $model = new MoneyModel();
+        $this->assertNull($model->optionalMoney);
+        $form->bind($model);
+        $form->setData([
+            'money' => [
+                'amount' => 100.23,
+                'currency' => 'GBP',
+            ],
+            'optionalMoney' => [
+                'amount' => 123.45,
+                'currency' => 'GBP',
+            ],
+        ]);
+        $this->assertTrue($form->isValid());
+        $bound = $form->getData();
+        $this->assertSame($model, $bound);
+        $this->assertInstanceOf(Money::class, $model->money);
+        $this->assertSame(10023, $model->money->getAmount());
+        $this->assertSame('GBP', (string) $model->money->getCurrency());
+        $this->assertInstanceOf(Money::class, $model->optionalMoney);
+        $this->assertSame(12345, $model->optionalMoney->getAmount());
+        $this->assertSame('GBP', (string) $model->optionalMoney->getCurrency());
     }
 }

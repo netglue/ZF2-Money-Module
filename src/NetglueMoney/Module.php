@@ -9,7 +9,6 @@ use Zend\ModuleManager\Feature\FormElementProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ValidatorProviderInterface;
 use Zend\ModuleManager\Feature\ViewHelperProviderInterface;
-use Zend\ServiceManager\Factory\InvokableFactory;
 
 class Module implements
     ServiceProviderInterface,
@@ -18,6 +17,8 @@ class Module implements
     ValidatorProviderInterface,
     ViewHelperProviderInterface
 {
+    /** @var ConfigProvider */
+    private $config;
 
     /**
      * @throws Exception\ExtensionNotLoadedException if ext/intl is not present
@@ -31,58 +32,36 @@ class Module implements
                 __NAMESPACE__
             ));
         }
+        $this->config = new ConfigProvider();
     }
 
-    /**
-     * Return Service Config
-     * @return array
-     * @implements ServiceProviderInterface
-     */
     public function getServiceConfig() : array
     {
-        return [
-            'factories' => [
-                Service\CurrencyList::class => Factory\CurrencyListFactory::class,
-            ],
-        ];
+        return $this->config->getDependencyConfig();
     }
 
     public function getConfig() : array
     {
-        return include __DIR__ . '/../../config/module.config.php';
+        return [
+            'ng_money' => $this->config->getModuleConfig(),
+            'view_manager' => [
+                'template_map' => $this->config->getTemplateMap(),
+            ],
+        ];
     }
 
     public function getFormElementConfig() : array
     {
-        return [
-            'factories' => [
-                Form\Element\SelectCurrency::class => Factory\CurrencySelectFactory::class,
-                Form\MoneyFieldset::class          => InvokableFactory::class,
-                Form\Element\Money::class          => InvokableFactory::class,
-            ],
-        ];
+        return $this->config->getFormElementConfig();
     }
 
     public function getValidatorConfig() : array
     {
-        return [
-            'factories' => [
-                Validator\CurrencyCode::class => Factory\CurrencyCodeValidatorFactory::class,
-            ],
-        ];
+        return $this->config->getValidatorConfig();
     }
 
     public function getViewHelperConfig() : array
     {
-        return [
-            'factories' => [
-                View\Helper\MoneyFormat::class => InvokableFactory::class,
-                View\Helper\FormMoney::class   => InvokableFactory::class,
-            ],
-            'aliases' => [
-                'moneyFormat' => View\Helper\MoneyFormat::class,
-                'formMoney'   => View\Helper\FormMoney::class,
-            ],
-        ];
+        return $this->config->getViewHelperConfig();
     }
 }

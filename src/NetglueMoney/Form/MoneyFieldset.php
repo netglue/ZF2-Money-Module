@@ -337,4 +337,9 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
             'message' => $message,
         ];
     }
+
+    public function allowValueBinding()
+    {
+        return true;
+    }
 }
