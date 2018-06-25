@@ -102,12 +102,11 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      */
     public function init()
     {
-        $code = $this->getDefaultCurrencyCode();
-        if (! $code) {
-            $code = 'XXX';
-        }
         $this->initialiseElements();
-        $this->setMoney(new Money(0, new Currency($code)));
+        $code = $this->getDefaultCurrencyCode();
+        if ($code) {
+            $this->get('currency')->setValue($code);
+        }
     }
 
     /**

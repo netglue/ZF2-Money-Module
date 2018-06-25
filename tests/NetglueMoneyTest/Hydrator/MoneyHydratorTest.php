@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NetglueMoneyTest\Hydrator;
 
+use NetglueMoney\Hydrator\MoneyHydrator;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
 use NetglueMoneyTest\Framework\TestCase;
