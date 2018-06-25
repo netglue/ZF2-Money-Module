@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Money
  *
@@ -53,7 +54,7 @@ namespace NetglueMoney\Money;
  */
 class AMD extends Money
 {
-    public function __construct($amount)
+    public function __construct(int $amount)
     {
         parent::__construct($amount, new Currency('AMD'));
     }

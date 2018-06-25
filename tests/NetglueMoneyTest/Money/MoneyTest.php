@@ -48,15 +48,6 @@ use NetglueMoneyTest\Framework\TestCase;
 
 class MoneyTest extends TestCase
 {
-    /**
-     * @covers            \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
-     */
-    public function testExceptionIsRaisedForInvalidConstructorArguments()
-    {
-        new Money(null, new Currency('EUR'));
-    }
 
     /**
      * @covers            \NetglueMoney\Money\Money::__construct
@@ -67,16 +58,6 @@ class MoneyTest extends TestCase
     public function testExceptionIsRaisedForInvalidConstructorArguments2()
     {
         new Money(0, null);
-    }
-
-    /**
-     * @covers            \NetglueMoney\Money\Money::fromString
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
-     */
-    public function testExceptionIsRaisedForInvalidConstructorArguments3()
-    {
-        Money::fromString(1234, new Currency('EUR'));
     }
 
     /**
@@ -395,19 +376,6 @@ class MoneyTest extends TestCase
 
         $this->assertEquals(new Money(8264, new Currency('EUR')), $extract['subtotal']);
         $this->assertEquals(new Money(1736, new Currency('EUR')), $extract['percentage']);
-    }
-
-    /**
-     * @covers            \NetglueMoney\Money\Money::allocateToTargets
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
-     */
-    public function testExceptionIsRaisedWhenTryingToAllocateToInvalidNumberOfTargets()
-    {
-        $a = new Money(0, new Currency('EUR'));
-        $a->allocateToTargets(null);
     }
 
     /**
