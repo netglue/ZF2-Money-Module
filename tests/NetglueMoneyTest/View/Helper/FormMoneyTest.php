@@ -68,7 +68,7 @@ class FormMoneyTest extends TestCase
         $helper = new FormMoney;
         $formatter = $helper->getFormatter();
         $this->assertInstanceOf('NumberFormatter', $formatter);
-        $this->assertSame($helper->getLocale(Locale::VALID_LOCALE), $formatter->getLocale(Locale::VALID_LOCALE));
+        $this->assertSame($helper->getLocale(), $formatter->getLocale(Locale::VALID_LOCALE));
 
         $helper->setLocale('de_DE');
         $formatter = $helper->getFormatter();

@@ -9,7 +9,6 @@ use NetglueMoney\Money\Currency;
 use NetglueMoney\Money\Money;
 use NetglueMoneyTest\Framework\TestCase;
 use Zend\Form\ElementInterface;
-use Zend\Form\Form;
 
 class MoneyFieldsetTest extends TestCase
 {

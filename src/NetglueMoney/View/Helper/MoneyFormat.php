@@ -151,7 +151,7 @@ class MoneyFormat extends AbstractHelper
      * Set the currency pattern
      *
      * @param  string $currencyPattern
-     * @return CurrencyFormat
+     * @return self
      */
     public function setCurrencyPattern(string $currencyPattern) : self
     {
@@ -173,7 +173,7 @@ class MoneyFormat extends AbstractHelper
      * Set if the view helper should show decimals
      *
      * @param  bool $showDecimals
-     * @return CurrencyFormat
+     * @return self
      */
     public function setShouldShowDecimals(bool $showDecimals) : self
     {
