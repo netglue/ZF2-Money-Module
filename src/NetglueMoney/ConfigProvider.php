@@ -89,5 +89,4 @@ class ConfigProvider
             'map' => $this->getTemplateMap(),
         ];
     }
-
 }
