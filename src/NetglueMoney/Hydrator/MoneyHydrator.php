@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace NetglueMoney\Hydrator;
 
-use Zend\Hydrator\HydratorInterface;
-
-use NetglueMoney\Money\Money;
-use NetglueMoney\Money\Currency;
 use NetglueMoney\Exception;
+use NetglueMoney\Money\Currency;
+use NetglueMoney\Money\Money;
+use Zend\Hydrator\HydratorInterface;
+use function sprintf;
 
 class MoneyHydrator implements HydratorInterface
 {
@@ -49,8 +49,6 @@ class MoneyHydrator implements HydratorInterface
     {
         $currency = new Currency($data['currency']);
         $amount = (int) ($data['amount'] * $currency->getSubUnit());
-        $object = new Money($amount, $currency);
-
-        return $object;
+        return new Money($amount, $currency);
     }
 }

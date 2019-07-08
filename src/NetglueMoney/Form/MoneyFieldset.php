@@ -98,7 +98,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Init
      * @return void
      */
-    public function init()
+    public function init() : void
     {
         $this->initialiseElements();
         $code = $this->getDefaultCurrencyCode();
@@ -111,7 +111,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Adds the required elements if they do not already exist
      * @return void
      */
-    private function initialiseElements()
+    private function initialiseElements() : void
     {
         if (! $this->has('currency')) {
             $this->add($this->getCurrencyElementSpec());
@@ -125,7 +125,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Get input spec
      * @return array
      */
-    public function getInputFilterSpecification()
+    public function getInputFilterSpecification() : array
     {
         $required = true;
         if ($this->hasAttribute('required')) {
@@ -216,27 +216,18 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
 
     /**
      * Return the bound Money object if any
-     * @return Money|NULL
      */
     public function getMoney() :? Money
     {
         return $this->getObject();
     }
 
-    /**
-     * Return the currency element
-     * @return \Zend\Form\ElementInterface
-     */
     public function getCurrencyElement() : ElementInterface
     {
         $this->initialiseElements();
         return $this->get('currency');
     }
 
-    /**
-     * Return the amount element
-     * @return \Zend\Form\ElementInterface
-     */
     public function getAmountElement() : ElementInterface
     {
         $this->initialiseElements();
@@ -247,7 +238,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Return currency element specification
      * @return array
      */
-    public function getCurrencyElementSpec()
+    public function getCurrencyElementSpec() : array
     {
         return $this->currencyElementSpec;
     }
@@ -265,7 +256,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
      * Return amount element specification
      * @return array
      */
-    public function getAmountElementSpec()
+    public function getAmountElementSpec() : array
     {
         return $this->amountElementSpec;
     }
@@ -301,11 +292,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
 
     public function getDefaultCurrencyCode() :? string
     {
-        if (isset($this->options['default_currency'])) {
-            return $this->options['default_currency'];
-        }
-
-        return null;
+        return $this->options['default_currency'] ?? null;
     }
 
     /**
@@ -338,7 +325,7 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
         ];
     }
 
-    public function allowValueBinding()
+    public function allowValueBinding() : bool
     {
         return true;
     }

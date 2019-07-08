@@ -43,59 +43,40 @@ declare(strict_types=1);
  */
 namespace NetglueMoneyTest\Money;
 
-use NetglueMoney\Money\Money;
+use NetglueMoney\Exception\CurrencyMismatchException;
+use NetglueMoney\Exception\InvalidArgumentException;
+use NetglueMoney\Exception\OverflowException;
 use NetglueMoney\Money\Currency;
+use NetglueMoney\Money\Money;
 use NetglueMoneyTest\Framework\TestCase;
 
 class MoneyTest extends TestCase
 {
-
-    /**
-     * @covers            \NetglueMoney\Money\Money::__construct
-     * @covers            \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
-     */
-    public function testExceptionIsRaisedForInvalidConstructorArguments2()
+    public function testExceptionIsRaisedForInvalidConstructorArguments2() : void
     {
+        $this->expectException(InvalidArgumentException::class);
         new Money(0, null);
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::__construct
-     * @covers \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testObjectCanBeConstructedForValidConstructorArguments()
+    public function testObjectCanBeConstructedForValidConstructorArguments() : Money
     {
         $m = new Money(0, new Currency('EUR'));
 
-        $this->assertInstanceOf('NetglueMoney\\Money\\Money', $m);
+        $this->assertInstanceOf(Money::class, $m);
 
         return $m;
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::__construct
-     * @covers \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testObjectCanBeConstructedForValidConstructorArguments2()
+    public function testObjectCanBeConstructedForValidConstructorArguments2() : Money
     {
         $m = new Money(0, 'EUR');
 
-        $this->assertInstanceOf('NetglueMoney\\Money\\Money', $m);
+        $this->assertInstanceOf(Money::class, $m);
 
         return $m;
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::fromString
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testObjectCanBeConstructedFromStringValue()
+    public function testObjectCanBeConstructedFromStringValue() : void
     {
         $this->assertEquals(
             new Money(1234, new Currency('EUR')),
@@ -103,13 +84,7 @@ class MoneyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::fromString
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testObjectCanBeConstructedFromStringValue2()
+    public function testObjectCanBeConstructedFromStringValue2() : void
     {
         $this->assertEquals(
             new Money(1234, new Currency('EUR')),
@@ -118,46 +93,30 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::getAmount
      * @depends testObjectCanBeConstructedForValidConstructorArguments
      */
-    public function testAmountCanBeRetrieved(Money $m)
+    public function testAmountCanBeRetrieved(Money $m) : void
     {
         $this->assertEquals(0, $m->getAmount());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testObjectCanBeConstructedForValidConstructorArguments
      */
-    public function testCurrencyCanBeRetrieved(Money $m)
+    public function testCurrencyCanBeRetrieved(Money $m) : void
     {
         $this->assertEquals(new Currency('EUR'), $m->getCurrency());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::getCurrencyCode
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testObjectCanBeConstructedForValidConstructorArguments
      */
-    public function testCurrencyCodeCanBeRetrieved(Money $m)
+    public function testCurrencyCodeCanBeRetrieved(Money $m) : void
     {
         $this->assertEquals('EUR', $m->getCurrencyCode());
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::add
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @covers \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::getCurrency
-     * @uses   \NetglueMoney\Money\Money::assertIsInteger
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testAnotherMoneyObjectWithSameCurrencyCanBeAdded()
+    public function testAnotherMoneyObjectWithSameCurrencyCanBeAdded() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -168,70 +127,30 @@ class MoneyTest extends TestCase
         $this->assertEquals(3, $c->getAmount());
     }
 
-    /**
-     * @covers            \NetglueMoney\Money\Money::add
-     * @covers            \NetglueMoney\Money\Money::newMoney
-     * @covers            \NetglueMoney\Money\Money::assertSameCurrency
-     * @covers            \NetglueMoney\Money\Money::assertIsInteger
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::getAmount
-     * @uses              \NetglueMoney\Money\Money::getCurrency
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\OverflowException
-     */
-    public function testExceptionIsThrownForOverflowingAddition()
+    public function testExceptionIsThrownForOverflowingAddition() : void
     {
         $a = new Money(PHP_INT_MAX, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
+        $this->expectException(OverflowException::class);
         $a->add($b);
     }
 
-    /**
-     * @covers            \NetglueMoney\Money\Money::assertInsideIntegerBounds
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::multiply
-     * @uses              \NetglueMoney\Money\Money::castToInt
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\OverflowException
-     */
-    public function testExceptionIsRaisedForIntegerOverflow()
+    public function testExceptionIsRaisedForIntegerOverflow() : void
     {
         $a = new Money(PHP_INT_MAX, new Currency('EUR'));
+        $this->expectException(OverflowException::class);
         $a->multiply(2);
     }
 
-    /**
-     * @covers            \NetglueMoney\Money\Money::add
-     * @covers            \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::getAmount
-     * @uses              \NetglueMoney\Money\Money::getCurrency
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\CurrencyMismatchException
-     */
-    public function testExceptionIsRaisedWhenMoneyObjectWithDifferentCurrencyIsAdded()
+    public function testExceptionIsRaisedWhenMoneyObjectWithDifferentCurrencyIsAdded() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('USD'));
-
+        $this->expectException(CurrencyMismatchException::class);
         $a->add($b);
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::subtract
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @covers \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::getCurrency
-     * @uses   \NetglueMoney\Money\Money::assertIsInteger
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testAnotherMoneyObjectWithSameCurrencyCanBeSubtracted()
+    public function testAnotherMoneyObjectWithSameCurrencyCanBeSubtracted() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -243,51 +162,24 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers            \NetglueMoney\Money\Money::subtract
-     * @covers            \NetglueMoney\Money\Money::newMoney
-     * @covers            \NetglueMoney\Money\Money::assertSameCurrency
-     * @covers            \NetglueMoney\Money\Money::assertIsInteger
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::getAmount
-     * @uses              \NetglueMoney\Money\Money::getCurrency
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\OverflowException
+     * @expectedException OverflowException
      */
-    public function testExceptionIsThrownForOverflowingSubtraction()
+    public function testExceptionIsThrownForOverflowingSubtraction() : void
     {
         $a = new Money(-PHP_INT_MAX, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
         $a->subtract($b);
     }
 
-    /**
-     * @covers            \NetglueMoney\Money\Money::subtract
-     * @covers            \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::getAmount
-     * @uses              \NetglueMoney\Money\Money::getCurrency
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\CurrencyMismatchException
-     */
-    public function testExceptionIsRaisedWhenMoneyObjectWithDifferentCurrencyIsSubtracted()
+    public function testExceptionIsRaisedWhenMoneyObjectWithDifferentCurrencyIsSubtracted() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('USD'));
-
+        $this->expectException(CurrencyMismatchException::class);
         $b->subtract($a);
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::negate
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testCanBeNegated()
+    public function testCanBeNegated() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = $a->negate();
@@ -296,17 +188,7 @@ class MoneyTest extends TestCase
         $this->assertEquals(-1, $b->getAmount());
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::multiply
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @covers \NetglueMoney\Money\Money::castToInt
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::assertInsideIntegerBounds
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testCanBeMultipliedByAFactor()
+    public function testCanBeMultipliedByAFactor() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = $a->multiply(2);
@@ -316,27 +198,15 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers            \NetglueMoney\Money\Money::multiply
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\InvalidArgumentException
+     * @expectedException InvalidArgumentException
      */
-    public function testExceptionIsRaisedWhenMultipliedUsingInvalidRoundingMode()
+    public function testExceptionIsRaisedWhenMultipliedUsingInvalidRoundingMode() : void
     {
         $a = new Money(1, new Currency('EUR'));
-        $a->multiply(2, null);
+        $a->multiply(2, 123456789);
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::allocateToTargets
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testCanBeAllocatedToNumberOfTargets()
+    public function testCanBeAllocatedToNumberOfTargets() : void
     {
         $a = new Money(99, new Currency('EUR'));
         $r = $a->allocateToTargets(10);
@@ -352,25 +222,13 @@ class MoneyTest extends TestCase
                 new Money(10, new Currency('EUR')),
                 new Money(10, new Currency('EUR')),
                 new Money(10, new Currency('EUR')),
-                new Money(9, new Currency('EUR'))
+                new Money(9, new Currency('EUR')),
             ],
             $r
         );
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::extractPercentage
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::getCurrency
-     * @uses   \NetglueMoney\Money\Money::subtract
-     * @uses   \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses   \NetglueMoney\Money\Money::assertIsInteger
-     * @uses   \NetglueMoney\Money\Money::newMoney
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testPercentageCanBeExtracted()
+    public function testPercentageCanBeExtracted() : void
     {
         $original = new Money(10000, new Currency('EUR'));
         $extract  = $original->extractPercentage(21);
@@ -379,17 +237,7 @@ class MoneyTest extends TestCase
         $this->assertEquals(new Money(1736, new Currency('EUR')), $extract['percentage']);
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::allocateByRatios
-     * @covers \NetglueMoney\Money\Money::newMoney
-     * @covers \NetglueMoney\Money\Money::castToInt
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::assertInsideIntegerBounds
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testCanBeAllocatedByRatios()
+    public function testCanBeAllocatedByRatios() : void
     {
         $a = new Money(5, new Currency('EUR'));
         $r = $a->allocateByRatios([3, 7]);
@@ -397,22 +245,13 @@ class MoneyTest extends TestCase
         $this->assertEquals(
             [
                 new Money(2, new Currency('EUR')),
-                new Money(3, new Currency('EUR'))
+                new Money(3, new Currency('EUR')),
             ],
             $r
         );
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Money::compareTo
-     * @covers \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses   \NetglueMoney\Money\Money::__construct
-     * @uses   \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses   \NetglueMoney\Money\Money::getAmount
-     * @uses   \NetglueMoney\Money\Money::getCurrency
-     * @uses   \NetglueMoney\Money\Currency
-     */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -423,17 +262,9 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::greaterThan
-     * @covers  \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses    \NetglueMoney\Money\Money::__construct
-     * @uses    \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses    \NetglueMoney\Money\Money::compareTo
-     * @uses    \NetglueMoney\Money\Money::getAmount
-     * @uses    \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testCanBeComparedToAnotherMoneyObjectWithSameCurrency
      */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency2()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency2() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -443,17 +274,9 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::lessThan
-     * @covers  \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses    \NetglueMoney\Money\Money::__construct
-     * @uses    \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses    \NetglueMoney\Money\Money::compareTo
-     * @uses    \NetglueMoney\Money\Money::getAmount
-     * @uses    \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testCanBeComparedToAnotherMoneyObjectWithSameCurrency
      */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency3()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency3() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -463,17 +286,9 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::equals
-     * @covers  \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses    \NetglueMoney\Money\Money::__construct
-     * @uses    \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses    \NetglueMoney\Money\Money::compareTo
-     * @uses    \NetglueMoney\Money\Money::getAmount
-     * @uses    \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testCanBeComparedToAnotherMoneyObjectWithSameCurrency
      */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency4()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency4() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(1, new Currency('EUR'));
@@ -485,19 +300,9 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::greaterThanOrEqual
-     * @covers  \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses    \NetglueMoney\Money\Money::__construct
-     * @uses    \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses    \NetglueMoney\Money\Money::greaterThan
-     * @uses    \NetglueMoney\Money\Money::equals
-     * @uses    \NetglueMoney\Money\Money::compareTo
-     * @uses    \NetglueMoney\Money\Money::getAmount
-     * @uses    \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testCanBeComparedToAnotherMoneyObjectWithSameCurrency
      */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency5()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency5() : void
     {
         $a = new Money(2, new Currency('EUR'));
         $b = new Money(2, new Currency('EUR'));
@@ -510,19 +315,9 @@ class MoneyTest extends TestCase
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Money::lessThanOrEqual
-     * @covers  \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses    \NetglueMoney\Money\Money::__construct
-     * @uses    \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses    \NetglueMoney\Money\Money::lessThan
-     * @uses    \NetglueMoney\Money\Money::equals
-     * @uses    \NetglueMoney\Money\Money::compareTo
-     * @uses    \NetglueMoney\Money\Money::getAmount
-     * @uses    \NetglueMoney\Money\Money::getCurrency
-     * @uses    \NetglueMoney\Money\Currency
      * @depends testCanBeComparedToAnotherMoneyObjectWithSameCurrency
      */
-    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency6()
+    public function testCanBeComparedToAnotherMoneyObjectWithSameCurrency6() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(1, new Currency('EUR'));
@@ -534,20 +329,11 @@ class MoneyTest extends TestCase
         $this->assertFalse($c->lessThanOrEqual($a));
     }
 
-    /**
-     * @covers            \NetglueMoney\Money\Money::compareTo
-     * @covers            \NetglueMoney\Money\Money::assertSameCurrency
-     * @uses              \NetglueMoney\Money\Money::__construct
-     * @uses              \NetglueMoney\Money\Money::handleCurrencyArgument
-     * @uses              \NetglueMoney\Money\Money::getCurrency
-     * @uses              \NetglueMoney\Money\Currency
-     * @expectedException \NetglueMoney\Exception\CurrencyMismatchException
-     */
-    public function testExceptionIsRaisedWhenComparedToMoneyObjectWithDifferentCurrency()
+    public function testExceptionIsRaisedWhenComparedToMoneyObjectWithDifferentCurrency() : void
     {
         $a = new Money(1, new Currency('EUR'));
         $b = new Money(2, new Currency('USD'));
-
+        $this->expectException(CurrencyMismatchException::class);
         $a->compareTo($b);
     }
 }

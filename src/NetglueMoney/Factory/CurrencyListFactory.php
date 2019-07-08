@@ -5,13 +5,14 @@ namespace NetglueMoney\Factory;
 
 use NetglueMoney\Service\CurrencyList;
 use Psr\Container\ContainerInterface;
+use function is_array;
 
 class CurrencyListFactory
 {
     public function __invoke(ContainerInterface $container) : CurrencyList
     {
         $config = $container->get('config');
-        $config = isset($config['ng_money']) ? $config['ng_money'] : [];
+        $config = $config['ng_money'] ?? [];
         $list = new CurrencyList;
 
         if (isset($config['allowCurrencies']) && is_array($config['allowCurrencies'])) {
