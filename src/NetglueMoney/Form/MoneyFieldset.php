@@ -8,6 +8,7 @@ use NetglueMoney\Hydrator\MoneyHydrator;
 use NetglueMoney\Money\Money;
 use NetglueMoney\Validator\CurrencyCode;
 use NumberFormatter;
+use Throwable;
 use Zend\Filter\StringToUpper;
 use Zend\Filter\StringTrim;
 use Zend\Form\Element as ZendElement;
@@ -215,11 +216,23 @@ class MoneyFieldset extends Fieldset implements InputFilterProviderInterface
     }
 
     /**
-     * Return the bound Money object if any
+     * Try to return a money object based on current values if possible
      */
     public function getMoney() :? Money
     {
-        return $this->getObject();
+        $object = $this->getObject();
+        if ($object instanceof Money) {
+            return $object;
+        }
+        try {
+            $money = $this->getHydrator()->hydrate([
+                'amount' => $this->getAmountElement()->getValue(),
+                'currency' => $this->getCurrencyElement()->getValue(),
+            ], null);
+            return $money instanceof Money ? $money : null;
+        } catch (Throwable $error) {
+            return null;
+        }
     }
 
     public function getCurrencyElement() : ElementInterface

@@ -11,6 +11,7 @@ class MoneyModel
     /** @var Money|null */
     public $money;
 
+    /** @var Money|null */
     public $optionalMoney;
 
     public function setMoney(Money $money) : void
@@ -34,7 +35,7 @@ class MoneyModel
         ];
     }
 
-    public function setOptionalMoney(Money $money) : void
+    public function setOptionalMoney(?Money $money) : void
     {
         $this->optionalMoney = $money;
     }
@@ -43,5 +44,4 @@ class MoneyModel
     {
         return $this->optionalMoney;
     }
-
 }

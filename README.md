@@ -1,12 +1,25 @@
 # ZF2 Money Module
 
+## No longer actively maintained - use at your own risk…
+
+Whilst it's doubtful that you're using this lib, you shouldn't. It currently has a non-trivial issue that requires the
+lib to pin `zend-form` to `2.12.0`. It's outdated and you should probably just import
+[moneyphp/money](https://github.com/moneyphp/money) and do your own wiring.
+
+---
+
 A Zend Framework 2 module intended to make it easier to work with money.
 
 [![Code Climate](https://codeclimate.com/github/netglue/ZF2-Money-Module/badges/gpa.svg)](https://codeclimate.com/github/netglue/ZF2-Money-Module) [![Test Coverage](https://codeclimate.com/github/netglue/ZF2-Money-Module/badges/coverage.svg)](https://codeclimate.com/github/netglue/ZF2-Money-Module)
 
-Essentially, this module imports [Sebastian Bergmann's Money Library](https://github.com/sebastianbergmann/money) but probably controversially doesn't use it as a dependency with composer etc. The reason for this in the first instance was to get access to private static member vars in `Currency` but things have changed since first making this for ZF2 a long time ago. It's a useful module but really, it should be using [moneyphp/money](https://github.com/moneyphp/money) for its value objects. I have legacy code that uses the money VO's in the NetglueMoney namespace, so it's staying as-is for now but in future I'll probably migrate to moneyphp.
+Essentially, this module imports [Sebastian Bergmann's Money Library](https://github.com/sebastianbergmann/money) but probably
+ controversially doesn't use it as a dependency with composer etc. The reason for this in the first instance was to get access
+  to private static member vars in `Currency` but things have changed since first making this for ZF2 a long time ago. It's 
+  a useful module but really, it should be using [moneyphp/money](https://github.com/moneyphp/money) for its value objects. I have legacy code that uses the money VO's in the NetglueMoney namespace, so it's staying as-is for now but in future I'll probably migrate to moneyphp.
 
 It's important to note that the Money value object stores the amount as an integer, the given currencies' smallest unit.
+
+
 
 ## Install
 
@@ -46,6 +59,12 @@ Largely based on `Zend\I18n\View\Helper\CurrencyFormat`, but the parameters have
 You can also specify custom format patterns - look at NumberFormatter docs for more info.
 
 ## Changelog
+
+### 3.1.0
+* A bunch of CS fixes
+* the `getMoney()` method of the fieldset is now more likely to return a money instance 😬 🤞
+
+
 ### 3.0.0
 * Removed initializers and modernised to require PHP >= 7.1
 * Compatible with Zend Framework 3

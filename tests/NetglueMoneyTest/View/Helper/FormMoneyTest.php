@@ -49,7 +49,6 @@ class FormMoneyTest extends TestCase
     {
         $helper = new FormMoney;
         $gbFormatter = $helper->getFormatter('en_GB');
-        $this->assertInstanceOf(NumberFormatter::class, $gbFormatter);
         $this->assertSame($gbFormatter, $helper->getFormatter('en_GB'));
 
         $this->assertSame(
@@ -60,7 +59,7 @@ class FormMoneyTest extends TestCase
 
         $fr = $helper->getFormatter('fr-FR');
         $this->assertSame('fr_FR', $fr->getLocale(Locale::VALID_LOCALE));
-        $this->assertSame('fr', $fr->getLocale(Locale::ACTUAL_LOCALE));
+        $this->assertStringStartsWith('fr', $fr->getLocale(Locale::ACTUAL_LOCALE));
     }
 
     public function testGetFormatterReturnsFormatterWithDefaultLocale() : void
@@ -73,7 +72,7 @@ class FormMoneyTest extends TestCase
         $helper->setLocale('de_DE');
         $formatter = $helper->getFormatter();
         $this->assertInstanceOf('NumberFormatter', $formatter);
-        $this->assertSame('de', $formatter->getLocale());
+        $this->assertStringStartsWith('de', $formatter->getLocale());
     }
 
     public function testFormatValue() : void

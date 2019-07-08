@@ -11,6 +11,7 @@ use NetglueMoneyTest\Framework\MoneyModel;
 use NetglueMoneyTest\Framework\TestCase;
 use Zend\Form\ElementInterface;
 use Zend\Form\Form;
+use Zend\Hydrator\ClassMethods;
 
 class MoneyFieldsetTest extends TestCase
 {
@@ -161,8 +162,9 @@ class MoneyFieldsetTest extends TestCase
         $factory = $this->getFormFactory();
         /** @var Form $form */
         $form = $factory->createForm($formSpec);
-        $form->setHydrator(new \Zend\Hydrator\ClassMethods);
+        $form->setHydrator(new ClassMethods(false, true));
         $model = new MoneyModel();
+        $this->assertNull($model->money);
         $this->assertNull($model->optionalMoney);
         $form->bind($model);
         $form->setData([
@@ -184,5 +186,36 @@ class MoneyFieldsetTest extends TestCase
         $this->assertInstanceOf(Money::class, $model->optionalMoney);
         $this->assertSame(12345, $model->optionalMoney->getAmount());
         $this->assertSame('GBP', (string) $model->optionalMoney->getCurrency());
+    }
+
+    public function testExpectedBehaviourOfGetValue() : void
+    {
+        $formSpec = [
+            'fieldsets' => [
+                'money' => [
+                    'spec' => [
+                        'name' => 'money',
+                        'type' => MoneyFieldset::class,
+                        'attributes' => [
+                            'required' => true,
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        $factory = $this->getFormFactory();
+        /** @var Form $form */
+        $form = $factory->createForm($formSpec);
+        $form->setData([
+            'money' => [
+                'amount' => 100.23,
+                'currency' => 'GBP',
+            ],
+        ]);
+        $this->assertTrue($form->isValid());
+        /** @var MoneyFieldset $fieldset */
+        $fieldset = $form->get('money');
+        $this->assertInstanceOf(MoneyFieldset::class, $fieldset);
+        $this->assertInstanceOf(Money::class, $fieldset->getMoney());
     }
 }
