@@ -1,9 +1,4 @@
 <?php
-/**
- * Copyright (c) 2018. Net Glue Ltd
- *
- */
-
 declare(strict_types=1);
 
 namespace NetglueMoneyTest\Framework;
@@ -16,9 +11,10 @@ class MoneyModel
     /** @var Money|null */
     public $money;
 
+    /** @var Money|null */
     public $optionalMoney;
 
-    public function setMoney(Money $money)
+    public function setMoney(Money $money) : void
     {
         $this->money = $money;
     }
@@ -39,7 +35,7 @@ class MoneyModel
         ];
     }
 
-    public function setOptionalMoney(Money $money)
+    public function setOptionalMoney(?Money $money) : void
     {
         $this->optionalMoney = $money;
     }
@@ -48,5 +44,4 @@ class MoneyModel
     {
         return $this->optionalMoney;
     }
-
 }

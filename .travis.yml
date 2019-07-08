@@ -5,6 +5,7 @@ sudo: false
 php:
   - 7.1
   - 7.2
+  - 7.3
     
 before_script:
   - curl -s http://getcomposer.org/installer | php
@@ -12,7 +13,7 @@ before_script:
 
 script:
   - mkdir -p build/logs
-  - phpunit
+  - vendor/bin/phpunit
 
 after_script:
   - php vendor/bin/coveralls -v

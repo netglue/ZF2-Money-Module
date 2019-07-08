@@ -5,13 +5,13 @@ namespace NetglueMoneyTest\Factory;
 
 use NetglueMoney\Factory\CurrencyListFactory;
 use NetglueMoney\Service\CurrencyList;
-use Psr\Container\ContainerInterface;
 use NetglueMoneyTest\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 class CurrencyListFactoryTest extends TestCase
 {
 
-    public function testCanBeRegisteredAsFactory()
+    public function testCanBeRegisteredAsFactory() : void
     {
         $container = $this->prophesize(ContainerInterface::class);
         $container->get('config')->willReturn([
@@ -26,7 +26,7 @@ class CurrencyListFactoryTest extends TestCase
         ]);
         $factory = new CurrencyListFactory();
         /** @var CurrencyList $list */
-        $list = ($factory)($container->reveal());
+        $list = $factory($container->reveal());
         $this->assertInstanceOf(CurrencyList::class, $list);
 
         $this->assertTrue($list->isAllowed('GBP'));

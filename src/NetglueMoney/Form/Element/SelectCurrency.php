@@ -4,16 +4,19 @@ declare(strict_types=1);
 namespace NetglueMoney\Form\Element;
 
 use NetglueMoney\Exception\ExceptionInterface;
-use Zend\Form\Element\Select;
 use NetglueMoney\Money\Currency;
-use Zend\InputFilter\InputProviderInterface;
-use Zend\Validator\ValidatorInterface;
-use NetglueMoney\Validator\CurrencyCode as CurrencyValidator;
 use NetglueMoney\Service\CurrencyList;
-use Zend\Stdlib\ArrayUtils;
+use NetglueMoney\Validator\CurrencyCode as CurrencyValidator;
+use Traversable;
 use Zend\Filter;
+use Zend\Form\Element\Select;
+use Zend\Stdlib\ArrayUtils;
+use Zend\Validator\ValidatorInterface;
+use function array_map;
+use function is_array;
+use function is_string;
 
-class SelectCurrency extends Select implements InputProviderInterface
+class SelectCurrency extends Select
 {
 
     /**
@@ -48,7 +51,7 @@ class SelectCurrency extends Select implements InputProviderInterface
     /**
      * @return array
      */
-    public function getValueOptions()
+    public function getValueOptions() : array
     {
         if (! count($this->valueOptions)) {
             $names = Currency::getAvailableCurrencyNames();
@@ -67,7 +70,7 @@ class SelectCurrency extends Select implements InputProviderInterface
      * Return input filter spec
      * @return array
      */
-    public function getInputSpecification()
+    public function getInputSpecification() : array
     {
         return [
             'name' => $this->getName(),
@@ -79,7 +82,7 @@ class SelectCurrency extends Select implements InputProviderInterface
             'validators' => [
                 [
                     'name' => CurrencyValidator::class,
-                ]
+                ],
             ],
         ];
     }
@@ -92,9 +95,9 @@ class SelectCurrency extends Select implements InputProviderInterface
         $multiple = $this->getAttribute('multiple');
 
         if (true === $multiple || 'multiple' === $multiple) {
-            if ($value instanceof \Traversable) {
+            if ($value instanceof Traversable) {
                 $value = ArrayUtils::iteratorToArray($value);
-            } elseif ($value == null) {
+            } elseif ($value === null) {
                 return parent::setValue([]);
             } elseif (! is_array($value)) {
                 $value = (array) $value;
@@ -132,7 +135,7 @@ class SelectCurrency extends Select implements InputProviderInterface
      */
     public function setDisplayNames(bool $flag) : void
     {
-        $this->setOption('displayNames', (bool) $flag);
+        $this->setOption('displayNames', $flag);
     }
 
     /**

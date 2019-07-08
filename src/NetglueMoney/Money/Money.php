@@ -43,7 +43,13 @@ declare(strict_types=1);
  */
 namespace NetglueMoney\Money;
 
+use function in_array;
 use NetglueMoney\Exception;
+use NetglueMoney\Exception\CurrencyMismatchException;
+use NetglueMoney\Exception\InvalidArgumentException;
+use function intval;
+use NetglueMoney\Exception\OverflowException;
+use function round;
 
 /**
  * Value Object that represents a monetary value
@@ -65,7 +71,7 @@ class Money
     private $amount;
 
     /**
-     * @var \NetglueMoney\Money\Currency
+     * @var Currency
      */
     private $currency;
 
@@ -76,18 +82,18 @@ class Money
         PHP_ROUND_HALF_UP,
         PHP_ROUND_HALF_DOWN,
         PHP_ROUND_HALF_EVEN,
-        PHP_ROUND_HALF_ODD
+        PHP_ROUND_HALF_ODD,
     ];
 
     /**
-     * @param  integer                             $amount
-     * @param  \NetglueMoney\Money\Currency|string $currency
-     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     * @param int $amount
+     * @param Currency|string $currency
+     * @throws InvalidArgumentException
      */
     public function __construct(int $amount, $currency)
     {
         $this->amount   = $amount;
-        $this->currency = $this->handleCurrencyArgument($currency);
+        $this->currency = self::handleCurrencyArgument($currency);
     }
 
     /**
@@ -100,27 +106,25 @@ class Money
      * number of fractional digits then the value will be rounded to the
      * currency's number of fractional digits.
      *
-     * @param  string                                   $value
-     * @param  \NetglueMoney\Money\Currency|string $currency
-     * @return \NetglueMoney\Money\Money
-     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     * @param  string $value
+     * @param Currency|string $currency
+     * @return Money
+     * @throws InvalidArgumentException
      */
-    public static function fromString(string $value, $currency)
+    public static function fromString(string $value, $currency) : Money
     {
         $currency = self::handleCurrencyArgument($currency);
 
         return new static(
-            intval(
+            (int) round(
+                $currency->getSubUnit() *
                 round(
-                    $currency->getSubUnit() *
-                    round(
-                        $value,
-                        $currency->getDefaultFractionDigits(),
-                        PHP_ROUND_HALF_UP
-                    ),
-                    0,
+                    $value,
+                    $currency->getDefaultFractionDigits(),
                     PHP_ROUND_HALF_UP
-                )
+                ),
+                0,
+                PHP_ROUND_HALF_UP
             ),
             $currency
         );
@@ -128,8 +132,6 @@ class Money
 
     /**
      * Returns the monetary value represented by this object.
-     *
-     * @return integer
      */
     public function getAmount() : int
     {
@@ -137,10 +139,7 @@ class Money
     }
 
     /**
-     * Returns the currency of the monetary value represented by this
-     * object.
-     *
-     * @return \NetglueMoney\Money\Currency
+     * Returns the currency of the monetary value represented by this object.
      */
     public function getCurrency() : Currency
     {
@@ -162,10 +161,10 @@ class Money
      * Returns a new Money object that represents the monetary value
      * of the sum of this Money object and another.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
-     * @return \NetglueMoney\Money\Money
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
-     * @throws \NetglueMoney\Exception\OverflowException
+     * @param Money $other
+     * @return Money
+     * @throws CurrencyMismatchException
+     * @throws OverflowException
      */
     public function add(Money $other) : Money
     {
@@ -182,10 +181,10 @@ class Money
      * Returns a new Money object that represents the monetary value
      * of the difference of this Money object and another.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
-     * @return \NetglueMoney\Money\Money
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
-     * @throws \NetglueMoney\Exception\OverflowException
+     * @param Money $other
+     * @return Money
+     * @throws CurrencyMismatchException
+     * @throws OverflowException
      */
     public function subtract(Money $other) : Money
     {
@@ -202,7 +201,7 @@ class Money
      * Returns a new Money object that represents the negated monetary value
      * of this Money object.
      *
-     * @return \NetglueMoney\Money\Money
+     * @return Money
      */
     public function negate() : Money
     {
@@ -215,13 +214,13 @@ class Money
      *
      * @param  float                                            $factor
      * @param  integer                                          $roundingMode
-     * @return \NetglueMoney\Money\Money
-     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     * @return Money
+     * @throws InvalidArgumentException
      */
-    public function multiply($factor, ?int $roundingMode = PHP_ROUND_HALF_UP) : Money
+    public function multiply($factor, int $roundingMode = PHP_ROUND_HALF_UP) : Money
     {
-        if (! in_array($roundingMode, self::$roundingModes)) {
-            throw new Exception\InvalidArgumentException(
+        if (! in_array($roundingMode, self::$roundingModes, true)) {
+            throw new InvalidArgumentException(
                 '$roundingMode must be a valid rounding mode (PHP_ROUND_*)'
             );
         }
@@ -238,13 +237,13 @@ class Money
      * among N targets.
      *
      * @param  integer                     $n
-     * @return \NetglueMoney\Money\Money[]
-     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     * @return Money[]
+     * @throws InvalidArgumentException
      */
     public function allocateToTargets(int $n) : array
     {
 
-        $low       = $this->newMoney(intval($this->amount / $n));
+        $low       = $this->newMoney((int)($this->amount / $n));
         $high      = $this->newMoney($low->getAmount() + 1);
         $remainder = $this->amount % $n;
         $result    = [];
@@ -265,11 +264,11 @@ class Money
      * using a list of ratios.
      *
      * @param  array                       $ratios
-     * @return \NetglueMoney\Money\Money[]
+     * @return Money[]
      */
     public function allocateByRatios(array $ratios) : array
     {
-        /** @var \NetglueMoney\Money\Money[] $result */
+        /** @var Money[] $result */
         $result    = [];
         $total     = array_sum($ratios);
         $remainder = $this->amount;
@@ -300,7 +299,7 @@ class Money
      *
      * @param  float $percentage
      * @param  integer $roundingMode
-     * @return \NetglueMoney\Money\Money[]
+     * @return Money[]
      * @see    https://github.com/sebastianbergmann/money/issues/27
      */
     public function extractPercentage(float $percentage, ?int $roundingMode = PHP_ROUND_HALF_UP) : array
@@ -324,15 +323,15 @@ class Money
      * if the value of this Money object is considered to be respectively
      * less than, equal to, or greater than the other Money object.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return integer                                           -1|0|1
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function compareTo(Money $other) : int
     {
         $this->assertSameCurrency($this, $other);
 
-        if ($this->amount == $other->getAmount()) {
+        if ($this->amount === $other->getAmount()) {
             return 0;
         }
 
@@ -342,9 +341,9 @@ class Money
     /**
      * Returns TRUE if this Money object equals to another.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return boolean
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function equals(Money $other) : bool
     {
@@ -355,9 +354,9 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is greater than that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return boolean
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function greaterThan(Money $other) : bool
     {
@@ -368,9 +367,9 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is greater than or equal that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return boolean
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function greaterThanOrEqual(Money $other) : bool
     {
@@ -381,9 +380,9 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is smaller than that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return boolean
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function lessThan(Money $other) : bool
     {
@@ -394,9 +393,9 @@ class Money
      * Returns TRUE if the monetary value represented by this Money object
      * is smaller than or equal that of another, FALSE otherwise.
      *
-     * @param  \NetglueMoney\Money\Money                         $other
+     * @param Money $other
      * @return boolean
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @throws CurrencyMismatchException
      */
     public function lessThanOrEqual(Money $other) : bool
     {
@@ -404,14 +403,14 @@ class Money
     }
 
     /**
-     * @param  \NetglueMoney\Money\Money                         $a
-     * @param  \NetglueMoney\Money\Money                         $b
-     * @throws \NetglueMoney\Exception\CurrencyMismatchException
+     * @param Money $a
+     * @param Money $b
+     * @throws CurrencyMismatchException
      */
     private function assertSameCurrency(Money $a, Money $b) : void
     {
         if ($a->getCurrency() != $b->getCurrency()) {
-            throw new Exception\CurrencyMismatchException;
+            throw new CurrencyMismatchException;
         }
     }
 
@@ -420,12 +419,12 @@ class Money
      *
      * @param  number $amount
      * @return void
-     * @throws \NetglueMoney\Exception\OverflowException
+     * @throws OverflowException
      */
     private function assertIsInteger($amount) : void
     {
         if (! is_int($amount)) {
-            throw new Exception\OverflowException;
+            throw new OverflowException;
         }
     } // @codeCoverageIgnore
 
@@ -434,12 +433,12 @@ class Money
      *
      * @param  number $amount
      * @return void
-     * @throws \NetglueMoney\Exception\OverflowException
+     * @throws OverflowException
      */
     private function assertInsideIntegerBounds($amount) : void
     {
         if (abs($amount) > PHP_INT_MAX) {
-            throw new Exception\OverflowException;
+            throw new OverflowException;
         }
     } // @codeCoverageIgnore
 
@@ -448,7 +447,7 @@ class Money
      *
      * @param number $amount
      * @return int
-     * @throws \NetglueMoney\Exception\OverflowException
+     * @throws OverflowException
      */
     private function castToInt($amount) : int
     {
@@ -459,7 +458,7 @@ class Money
 
     /**
      * @param  integer                   $amount
-     * @return \NetglueMoney\Money\Money
+     * @return Money
      */
     private function newMoney(int $amount) : Money
     {
@@ -467,14 +466,14 @@ class Money
     }
 
     /**
-     * @param  \NetglueMoney\Money\Currency|string $currency
-     * @return \NetglueMoney\Money\Currency
-     * @throws \NetglueMoney\Exception\InvalidArgumentException
+     * @param Currency|string $currency
+     * @return Currency
+     * @throws InvalidArgumentException
      */
     private static function handleCurrencyArgument($currency) : Currency
     {
         if (! $currency instanceof Currency && ! is_string($currency)) {
-            throw new Exception\InvalidArgumentException('$currency must be an object of type Currency or a string');
+            throw new InvalidArgumentException('$currency must be an object of type Currency or a string');
         }
 
         if (is_string($currency)) {

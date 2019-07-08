@@ -3,34 +3,34 @@ declare(strict_types=1);
 
 namespace NetglueMoneyTest\View\Helper;
 
-use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
-use NetglueMoneyTest\Framework\TestCase;
+use NetglueMoney\Money\Money;
 use NetglueMoney\View\Helper\MoneyFormat;
+use NetglueMoneyTest\Framework\TestCase;
 
 class MoneyFormatTest extends TestCase
 {
 
-    public function setUp()
+    protected function setUp() : void
     {
         ini_set('intl.default_locale', 'en_US');
         setlocale(LC_ALL, 'en_US');
     }
 
-    public function testSetGetLocale()
+    public function testSetGetLocale() : void
     {
         $helper = new MoneyFormat;
         $this->assertSame($helper, $helper->setLocale('en_GB'));
         $this->assertSame('en_GB', $helper->getLocale());
     }
 
-    public function testGetLocaleReturnsDefault()
+    public function testGetLocaleReturnsDefault() : void
     {
         $helper = new MoneyFormat;
         $this->assertSame(\Locale::getDefault(), $helper->getLocale());
     }
 
-    public function testShouldShowDecimalsBasic()
+    public function testShouldShowDecimalsBasic() : void
     {
         $helper = new MoneyFormat;
         $this->assertInternalType(
@@ -44,7 +44,7 @@ class MoneyFormatTest extends TestCase
         $this->assertTrue($helper->shouldShowDecimals());
     }
 
-    public function testSetGetCurrencyPattern()
+    public function testSetGetCurrencyPattern() : void
     {
         $helper = new MoneyFormat;
         $this->assertNull($helper->getCurrencyPattern());
@@ -52,7 +52,7 @@ class MoneyFormatTest extends TestCase
         $this->assertSame('Foo', $helper->getCurrencyPattern());
     }
 
-    public function testFormatting()
+    public function testFormatting() : void
     {
         $helper = new MoneyFormat;
         $money = new Money(100000, new Currency('GBP'));

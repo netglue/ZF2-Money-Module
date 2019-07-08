@@ -8,10 +8,10 @@ use NetglueMoney\Validator\CurrencyCode;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use Zend\Form\Factory;
 use Zend\Form\FormElementManager\FormElementManagerV3Polyfill;
+use Zend\InputFilter\Factory as InputFilterFactory;
 use Zend\InputFilter\InputFilterPluginManager;
 use Zend\Mvc\Application;
 use Zend\Validator\ValidatorPluginManager;
-use Zend\InputFilter\Factory as InputFilterFactory;
 
 class TestCase extends PHPUnitTestCase
 {
@@ -19,7 +19,7 @@ class TestCase extends PHPUnitTestCase
     /** @var Application */
     protected $application;
 
-    protected function getZendApplication()
+    protected function getZendApplication() : Application
     {
         if (! $this->application) {
             $this->application = $this->initZendApplication();
@@ -28,7 +28,7 @@ class TestCase extends PHPUnitTestCase
         return $this->application;
     }
 
-    private function initZendApplication()
+    private function initZendApplication() : Application
     {
         $appConfig = [
             'modules' => [
@@ -46,13 +46,12 @@ class TestCase extends PHPUnitTestCase
                     __DIR__ . '/../../../vendor',
                     __DIR__ . '/../../../',
                 ],
-            ]
+            ],
         ];
-        $application = Application::init($appConfig);
-        return $application;
+        return Application::init($appConfig);
     }
 
-    private function assertContainerHasDependencies()
+    private function assertContainerHasDependencies() : void
     {
         $app = $this->application;
         $container = $app->getServiceManager();
@@ -84,5 +83,4 @@ class TestCase extends PHPUnitTestCase
             $this->getInputFilterFactory()
         );
     }
-
 }

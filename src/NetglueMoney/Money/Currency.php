@@ -1211,7 +1211,7 @@ class Currency
         int $numericCode,
         int $defaultFractionDigits,
         int $subUnit
-    ) {
+    ): void {
         self::$currencies[$code] = [
             'display_name' => $displayName,
             'numeric_code' => $numericCode,

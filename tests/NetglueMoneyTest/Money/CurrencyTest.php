@@ -48,24 +48,15 @@ use NetglueMoneyTest\Framework\TestCase;
 
 class CurrencyTest extends TestCase
 {
-
-    /**
-     * @covers \NetglueMoney\Money\Currency::__construct
-     */
-    public function testObjectCanBeConstructedForValidConstructorArgument()
+    public function testObjectCanBeConstructedForValidConstructorArgument() : Currency
     {
         $c = new Currency('EUR');
-
-        $this->assertInstanceOf('NetglueMoney\\Money\\Currency', $c);
+        $this->assertInstanceOf(Currency::class, $c);
 
         return $c;
     }
 
-    /**
-     * @covers \NetglueMoney\Money\Currency::addCurrency
-     * @uses   \NetglueMoney\Money\Currency::__construct
-     */
-    public function testCustomCurrencyCanBeRegistered()
+    public function testCustomCurrencyCanBeRegistered() : void
     {
         Currency::addCurrency(
             'BTC',
@@ -76,85 +67,71 @@ class CurrencyTest extends TestCase
         );
 
         $this->assertInstanceOf(
-            'NetglueMoney\Money\Currency',
+            Currency::class,
             new Currency('BTC')
         );
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::__toString
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testCanBeCastToString(Currency $c)
+    public function testCanBeCastToString(Currency $c) : void
     {
         $this->assertEquals('EUR', (string) $c);
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::getCurrencyCode
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testCurrencyCodeCanBeRetrieved(Currency $c)
+    public function testCurrencyCodeCanBeRetrieved(Currency $c) : void
     {
         $this->assertEquals('EUR', $c->getCurrencyCode());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::getDefaultFractionDigits
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testDefaultFractionDigitsCanBeRetrieved(Currency $c)
+    public function testDefaultFractionDigitsCanBeRetrieved(Currency $c) : void
     {
         $this->assertEquals(2, $c->getDefaultFractionDigits());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::getDisplayName
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testDisplayNameCanBeRetrieved(Currency $c)
+    public function testDisplayNameCanBeRetrieved(Currency $c) : void
     {
         $this->assertEquals('Euro', $c->getDisplayName());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::getNumericCode
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testNumericCodeCanBeRetrieved(Currency $c)
+    public function testNumericCodeCanBeRetrieved(Currency $c) : void
     {
         $this->assertEquals(978, $c->getNumericCode());
     }
 
     /**
-     * @covers  \NetglueMoney\Money\Currency::getSubUnit
      * @depends testObjectCanBeConstructedForValidConstructorArgument
      */
-    public function testSubUnitCanBeRetrieved(Currency $c)
+    public function testSubUnitCanBeRetrieved(Currency $c) : void
     {
         $this->assertEquals(100, $c->getSubUnit());
     }
 
-    /**
-     * covers \NetglueMoney\Money\Currency::getAvailableCurrencies
-     */
-    public function testGetAvailableCurencies()
+    public function testGetAvailableCurrencies() : void
     {
         $array = Currency::getAvailableCurrencies();
-        $this->assertInternalType('array', $array);
         $this->assertContainsOnly('string', $array);
         foreach ($array as $code) {
             $this->assertRegExp('/^[A-Z]{3}$/', $code);
         }
     }
 
-    /**
-     * covers \NetglueMoney\Money\Currency::getAvailableCurrencyNames
-     */
-    public function testGetAvailableCurencyNames()
+    public function testGetAvailableCurrencyNames() : void
     {
         $array = Currency::getAvailableCurrencyNames();
-        $this->assertInternalType('array', $array);
         $this->assertContainsOnly('string', $array);
         foreach ($array as $code => $name) {
             $this->assertRegExp('/^[A-Z]{3}$/', $code);

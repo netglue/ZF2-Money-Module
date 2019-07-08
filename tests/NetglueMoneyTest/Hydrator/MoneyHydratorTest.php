@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace NetglueMoneyTest\Hydrator;
 
 use NetglueMoney\Hydrator\MoneyHydrator;
-use NetglueMoney\Money\Money;
 use NetglueMoney\Money\Currency;
+use NetglueMoney\Money\Money;
 use NetglueMoneyTest\Framework\TestCase;
+use stdClass;
 
 class MoneyHydratorTest extends TestCase
 {
 
-    public function testExtract()
+    public function testExtract() : void
     {
         $money = new Money(100, new Currency('GBP'));
         $hydrator = new MoneyHydrator;
@@ -27,13 +28,13 @@ class MoneyHydratorTest extends TestCase
     /**
      * @expectedException \NetglueMoney\Exception\InvalidArgumentException
      */
-    public function testExtractThrowsException()
+    public function testExtractThrowsException() : void
     {
         $hydrator = new MoneyHydrator;
-        $hydrator->extract(new \stdClass);
+        $hydrator->extract(new stdClass);
     }
 
-    public function testHydrate()
+    public function testHydrate() : void
     {
         $money = new Money(100, new Currency('GBP'));
         $hydrator = new MoneyHydrator;
