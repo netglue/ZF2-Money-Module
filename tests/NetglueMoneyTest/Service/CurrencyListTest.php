@@ -11,15 +11,13 @@ use NetglueMoneyTest\Framework\TestCase;
 class CurrencyListTest extends TestCase
 {
 
-    public function testNewInstanceAllowsAnyValidCurrency()
+    public function testNewInstanceAllowsAnyValidCurrency() : void
     {
         $list = new CurrencyList();
         $this->assertTrue($list->isAllowed('XXX'));
-
-        return $list;
     }
 
-    public function testConstructAppliesAllowList()
+    public function testConstructAppliesAllowList() : void
     {
         $list = new CurrencyList([
             'USD',
@@ -29,7 +27,7 @@ class CurrencyListTest extends TestCase
         $this->assertCount(1, $list->getAllow());
     }
 
-    public function testConstructAppliesDenyList()
+    public function testConstructAppliesDenyList() : void
     {
         $list = new CurrencyList(null, [
             'USD',
@@ -38,7 +36,7 @@ class CurrencyListTest extends TestCase
         $this->assertTrue($list->isAllowed('XXX'));
     }
 
-    public function testAddInitialisesAllowedArray()
+    public function testAddInitialisesAllowedArray() : void
     {
         $list = new CurrencyList;
         $this->assertTrue($list->isAllowed('USD'));
@@ -47,7 +45,7 @@ class CurrencyListTest extends TestCase
         $this->assertCount(1, $list->getAllow());
     }
 
-    public function testRemoveInitialisesDenyArray()
+    public function testRemoveInitialisesDenyArray() : void
     {
         $list = new CurrencyList;
         $this->assertTrue($list->isAllowed('USD'));
@@ -63,7 +61,7 @@ class CurrencyListTest extends TestCase
      * @expectedException \NetglueMoney\Exception\InvalidArgumentException
      * @expectedExceptionMessage Currency code should be a string
      */
-    public function testNonStringRaisesException()
+    public function testNonStringRaisesException() : void
     {
         $list = new CurrencyList;
         $list->add(123);
@@ -73,13 +71,13 @@ class CurrencyListTest extends TestCase
      * @expectedException \NetglueMoney\Exception\InvalidCurrencyCodeException
      * @expectedExceptionMessage not a valid ISO 4217 Currency code
      */
-    public function testInvalidCodeRaisesException()
+    public function testInvalidCodeRaisesException() : void
     {
         $list = new CurrencyList;
         $list->add('ZZZ');
     }
 
-    public function testAddAcceptsMoneyAndCurrencyInstances()
+    public function testAddAcceptsMoneyAndCurrencyInstances() : void
     {
         $list = new CurrencyList;
         $money = new Money(100, new Currency('GBP'));

@@ -15,7 +15,7 @@ use Zend\Form\Form;
 class MoneyFieldsetTest extends TestCase
 {
 
-    public function testInitialDefaults()
+    public function testInitialDefaults() : void
     {
         $fieldset = new MoneyFieldset();
         $fieldset->init();
@@ -25,7 +25,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame('amount', $fieldset->getAmountElement()->getName());
     }
 
-    public function testSetGetLocale()
+    public function testSetGetLocale() : void
     {
         $fieldset = new MoneyFieldset;
         $this->assertSame(Locale::getDefault(), $fieldset->getLocale());
@@ -33,7 +33,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame('test', $fieldset->getLocale());
     }
 
-    public function testSetGetDefaultCurrencyCode()
+    public function testSetGetDefaultCurrencyCode() : void
     {
         $fieldset = new MoneyFieldset;
         $this->assertNull($fieldset->getDefaultCurrencyCode());
@@ -41,7 +41,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame('GBP', $fieldset->getDefaultCurrencyCode());
     }
 
-    public function testSetGetElementSpec()
+    public function testSetGetElementSpec() : void
     {
         $fieldset = new MoneyFieldset;
         $spec = ['foo' => 'bar'];
@@ -51,7 +51,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame($spec, $fieldset->getAmountElementSpec());
     }
 
-    public function testSetMoneySetsBoundObject()
+    public function testSetMoneySetsBoundObject() : void
     {
         $fieldset = new MoneyFieldset;
         $money = new Money(123, new Currency('GBP'));
@@ -60,7 +60,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertSame($money, $fieldset->getMoney());
     }
 
-    public function testSetMoneySetsElementValues()
+    public function testSetMoneySetsElementValues() : void
     {
         $fieldset = new MoneyFieldset;
         $money = new Money(123, new Currency('GBP'));
@@ -69,7 +69,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertEquals('GBP', $fieldset->getCurrencyElement()->getValue());
     }
 
-    public function testMinMaxOptionsUpdateInputFilterSpec()
+    public function testMinMaxOptionsUpdateInputFilterSpec() : void
     {
         $fieldset = new MoneyFieldset;
         $spec = $fieldset->getInputFilterSpecification();
@@ -92,14 +92,14 @@ class MoneyFieldsetTest extends TestCase
         $this->assertTrue($spec['amount']['validators'][2]['options']['inclusive']);
     }
 
-    public function testDefaultCurrencySettingWillInitialiseCurrencyElementWithValue()
+    public function testDefaultCurrencySettingWillInitialiseCurrencyElementWithValue() : void
     {
         $fieldset = new MoneyFieldset('someName', ['default_currency' => 'USD']);
         $fieldset->init();
         $this->assertSame('USD', $fieldset->getCurrencyElement()->getValue());
     }
 
-    public function testSettingRequiredFlagOnFieldsetAppliesToElements()
+    public function testSettingRequiredFlagOnFieldsetAppliesToElements() : void
     {
         $formSpec = [
             'fieldsets' => [
@@ -134,7 +134,7 @@ class MoneyFieldsetTest extends TestCase
         $this->assertFalse($form->isValid());
     }
 
-    public function testBinding()
+    public function testBinding() : void
     {
         $formSpec = [
             'fieldsets' => [

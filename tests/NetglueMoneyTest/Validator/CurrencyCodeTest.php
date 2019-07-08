@@ -10,7 +10,7 @@ use NetglueMoneyTest\Framework\TestCase;
 class CurrencyCodeTest extends TestCase
 {
 
-    public function testBasic()
+    public function testBasic() : void
     {
         $validator = new CurrencyCode(new CurrencyList());
 

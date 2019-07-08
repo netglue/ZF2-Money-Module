@@ -11,7 +11,7 @@ use NetglueMoneyTest\Framework\TestCase;
 class SelectCurrencyTest extends TestCase
 {
 
-    public function testSetGetDisplayNames()
+    public function testSetGetDisplayNames() : void
     {
         $element = new SelectCurrency(new CurrencyList());
         $this->assertInternalType('bool', $element->getDisplayNames(), 'Display names options should be initially set to a bool');
@@ -21,7 +21,7 @@ class SelectCurrencyTest extends TestCase
         $this->assertFalse($element->getDisplayNames());
     }
 
-    public function testMakeCurrency()
+    public function testMakeCurrency() : void
     {
         $element = new SelectCurrency(new CurrencyList());
         $this->assertInstanceOf(Currency::class, $element->makeCurrency('ZAR'));
@@ -30,7 +30,7 @@ class SelectCurrencyTest extends TestCase
         $this->assertNull($element->makeCurrency(100));
     }
 
-    public function testGetInputSpecReturnsArray()
+    public function testGetInputSpecReturnsArray() : void
     {
         $element = new SelectCurrency(new CurrencyList(), 'foo');
         $spec = $element->getInputSpecification();
@@ -39,7 +39,7 @@ class SelectCurrencyTest extends TestCase
         $this->assertSame('foo', $spec['name']);
     }
 
-    public function testGetValueOptionsIsSeededWithList()
+    public function testGetValueOptionsIsSeededWithList() : void
     {
         $list = new CurrencyList();
         $element = new SelectCurrency($list);
@@ -50,11 +50,9 @@ class SelectCurrencyTest extends TestCase
             $this->assertSame($code, $label);
             $this->assertTrue($list->isAllowed($code));
         }
-
-        return $element;
     }
 
-    public function testSetValueConvertsToCurrencyInstance()
+    public function testSetValueConvertsToCurrencyInstance() : void
     {
         $element = new SelectCurrency(new CurrencyList());
         $element->setValue('GBP');
@@ -62,7 +60,7 @@ class SelectCurrencyTest extends TestCase
         $this->assertInstanceOf(Currency::class, $value);
     }
 
-    public function testSetValueMultipleConvertsToCurrencyInstance()
+    public function testSetValueMultipleConvertsToCurrencyInstance() : void
     {
         $element = new SelectCurrency(new CurrencyList());
         $element->setAttribute('multiple', true);
@@ -79,7 +77,7 @@ class SelectCurrencyTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Currency::class, $value);
 
         $input = new \ArrayObject([
-            'GBP', 'USD'
+            'GBP', 'USD',
         ]);
         $element->setValue($input);
         $value = $element->getValue();
